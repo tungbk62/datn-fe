@@ -1,0 +1,41 @@
+{
+    "presets": [
+        "next/babel"
+    ],
+    "plugins": [
+        [
+            "module-resolver",
+            {
+                "root": [
+                    "./src"
+                ],
+                "alias": {
+                    "@app-client": "./src/client",
+                    "@store-client": "./src/client/store",
+                    "@components-client": "./src/client/components",
+                    "@configs-client": "./src/client/configs",
+                    "@constants-client": "./src/client/constants",
+                    "@helpers-client": "./src/client/helpers",
+                    "@hooks-client": "./src/client/hooks",
+                    "@screens-client": "./src/client/screens",
+                    "@styles-client": "./src/client/styles"
+                }
+            }
+        ],
+        [
+            "import",
+            {
+                "libraryName": "antd",
+                "style": true
+            }
+        ],
+        [
+            "import",
+            {
+                "libraryName": "antd",
+                "libraryDirectory": "dist",
+                "style": true
+            }
+        ]
+    ]
+}

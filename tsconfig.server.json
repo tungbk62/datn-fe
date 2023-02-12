@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "dist",
+    "noEmit": false,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@server/*": [
+        "./src/server/*"
+      ],
+      "@models/*": [
+        "./src/server/models/*"
+      ]
+    }
+  },
+  "include": [
+    "src/server/server.ts"
+  ]
+}
