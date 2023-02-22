@@ -10,9 +10,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       // backgroundColor: "#E5E5E5",
     },
-    inputStyles:{
-    
-    },
+    inputStyles: {},
     containerGird: {
       padding: "0 5%",
     },
@@ -75,5 +73,4 @@ export const useStyles = makeStyles((theme: Theme) =>
       },
     },
   }),
-  
 );

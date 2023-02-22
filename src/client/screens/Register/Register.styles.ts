@@ -72,5 +72,12 @@ export const useStyles = makeStyles((theme: Theme) =>
         fontSize: "16px",
       },
     },
+    selectStyles: {
+      width: "100%",
+      height: "100%",
+      "& .ant-select-selector": {
+        height: "100% !important",
+      },
+    },
   }),
 );

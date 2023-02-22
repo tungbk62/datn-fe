@@ -6,7 +6,7 @@ import axios from "@app-client/helpers/axios";
 import { formatDateUI, showMessage } from "@app-client/helpers";
 import { setCommonAuthorizationToken } from "@app-client/helpers";
 
-export const authModel: IAuthState = {
+export const authModel: any = {
   state: {
     token: "",
     checkinTime: "",

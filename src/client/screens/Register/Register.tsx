@@ -4,15 +4,17 @@ import { Grid, Paper, Button } from "@material-ui/core";
 import {
   AutoComplete,
   Button as ButtonAntd,
-  Cascader,
-  Col,
   DatePicker,
   Input,
   InputNumber,
   Row,
-  Select,
+  Select as SelectAntd,
   Tooltip,
 } from "antd";
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 interface Props {}
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -152,7 +154,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                   className={
                                     errors.email ? "inputBorderRed" : ""
                                   }
-                                  placeholder="Enter your email"
+                                  placeholder="Nhập họ"
                                   // prefix={
                                   //   <UserOutlined className="site-form-item-icon" />
                                   // }
@@ -179,7 +181,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                   className={
                                     errors.email ? "inputBorderRed" : ""
                                   }
-                                  placeholder="Enter your email"
+                                  placeholder="Nhập tên"
                                   // prefix={
                                   //   <UserOutlined className="site-form-item-icon" />
                                   // }
@@ -202,34 +204,56 @@ const RegisterComponent = (props: Props): JSX.Element => {
                               </Grid>
                             </Grid>
 
-                            <DatePicker
-                              allowClear
-                              style={{ width: "50%" }}
-                              className={errors.email ? "inputBorderRed" : ""}
-                              placeholder="Enter your email"
-                              // prefix={
-                              //   <UserOutlined className="site-form-item-icon" />
-                              // }
-                              name="email"
-                              value={values.email}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                            />
-
-                            <Input.Group compact>
-                              <Select defaultValue="Zhejiang">
-                                <Select.Option value="Zhejiang">
-                                  Zhejiang
-                                </Select.Option>
-                                <Select.Option value="Jiangsu">
-                                  Jiangsu
-                                </Select.Option>
-                              </Select>
-                              <Input
-                                style={{ width: "50%" }}
-                                defaultValue="Xihu District, Hangzhou"
-                              />
-                            </Input.Group>
+                            <Grid
+                              style={{ paddingTop: "10px" }}
+                              container
+                              spacing={1}
+                            >
+                              <Grid className={""} item xs={4}>
+                                <DatePicker
+                                  allowClear
+                                  style={{ width: "100%",height:"100%" }}
+                                  className={
+                                    errors.email ? "inputBorderRed" : ""
+                                  }
+                                  placeholder="Ngày sinh"
+                                  // prefix={
+                                  //   <UserOutlined className="site-form-item-icon" />
+                                  // }
+                                  name="email"
+                                  value={values.email}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                />
+                              </Grid>
+                              <Grid className={""} item xs={4}>
+                                <SelectAntd
+                                  defaultValue="lucy"
+                                  className={classes.selectStyles}
+                                  // disabled
+                                  options={[{ value: 'lucy', label: 'Lucy' }]}
+                                />
+                              </Grid>
+                              <Grid className={""} item xs={4}>
+                                <Input
+                                  style={{ width: "100%",height:"100%" }}
+                                  defaultValue="Đông Anh"
+                                  allowClear
+                                  className={
+                                    errors.email ? "inputBorderRed" : ""
+                                  }
+                                  placeholder="Nhập tên"
+                                  // prefix={
+                                  //   <UserOutlined className="site-form-item-icon" />
+                                  // }
+                                  maxLength={50}
+                                  name="email"
+                                  value={values.email}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                />
+                              </Grid>
+                            </Grid>
                           </div>
                         </div>
                         <div className={classes.formRegisterItem}>

@@ -3,7 +3,7 @@ export interface IUserState {
     notiContent:string,
     notiTitle:string,
     notiType:string,
-    notiAction:string,
+    notiAction:any,
 }
 
 export interface IAppModel {
@@ -12,7 +12,7 @@ export interface IAppModel {
         notiContent:string,
         notiTitle:string,
         notiType:string,
-        notiAction:string,
+        notiAction:any,
 
     };
     reducers: {

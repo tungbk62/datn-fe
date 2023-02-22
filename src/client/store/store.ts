@@ -11,7 +11,7 @@ const persistPlugin: any = createPersistPlugin({
     "appModel",
   ],
   blacklist:[
-    "authModel",
+    // "authModel",
     // "appModel",
   ]
 });
