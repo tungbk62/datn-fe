@@ -7,13 +7,9 @@ const persistPlugin: any = createPersistPlugin({
   storage,
   version: 2,
   whitelist: [
-    // "authModel",
-    "appModel",
-  ],
-  blacklist:[
-    // "authModel",
+    "authModel",
     // "appModel",
-  ]
+  ],
 });
 
 export const store = init({
@@ -21,3 +17,4 @@ export const store = init({
   plugins: [persistPlugin],
 });
 export const { getState, dispatch } = store;
+export type Dispatch = typeof store.dispatch;

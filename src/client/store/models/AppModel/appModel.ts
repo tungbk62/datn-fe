@@ -6,84 +6,94 @@ import axios from "@app-client/helpers/axios";
 import { api } from "@app-client/constants";
 import { formatDateUI, showMessage } from "@app-client/helpers";
 import { setCommonAuthorizationToken } from "@app-client/helpers";
+import { getQueryURL, userDto } from "@app-client/helpers";
+const SUCCESS_CODE = 200;
+
 export const appModel: any = {
   state: {
     notiState: false,
     notiContent: "",
     notiTitle: "",
     notiType: "",
-    notiAction: "",
+    notiAction: 2,
     token: "",
+    listUserBusiness: null,
   } as any,
   reducers: {
-    setNotiState(state: IUserState, payload: any) {
-      state.notiState = true;
-      return { ...state };
-    },
-    setToken(state: any, payload: any) {
-      // console.log(state.token)
-      // console.log(payload)
-      Cookies.set("userToken", payload.access_token);
-      setCommonAuthorizationToken();
-      return { ...state, token: payload.access_token };
-    },
-    setUserInfo(state: any, payload: any) {
+    setListUserBusiness: (state: any, payload: any) => {
       return {
         ...state,
-        userInfo: {
-          employeeId: payload.id,
-          fullname: payload.fullname,
-          email: payload.email,
-          phone: payload.phone,
-          photo: payload.photo,
-          role: payload.role,
-          isAdmin: payload.isAdmin,
-        },
+        listUserBusiness: payload,
       };
     },
   },
   effects: (dispatch: any) => ({
-    async setNotiVisible() {},
-    async login(payload: any) {
+    /// admin
+    async getListUser(payload: any, state: any) {
       try {
-        const response = await axios.post(
-          api.LOGIN,
-          //  payload
-          {
-            email: payload.email,
-            password: payload.password,
-          },
+        const res = await axios.get(
+          getQueryURL(api.GET_LIST_USER_BUSINESS, payload),
         );
-
-        const { data } = response;
-        if (data?.status) {
-          showMessage(data?.message, "success");
-        } else {
-          showMessage(data?.message, "error");
+        if ((res.status = SUCCESS_CODE)) {
+          const data = res.data.map((item: any) => userDto(item));
+          dispatch.appModel.setListUserBusiness(data);
+          // console.log(res.data)
+          return data;
         }
-        dispatch.appModel.setToken(data);
-        return data;
-      } catch (err) {}
+        // dispatch.appModel.login()
+      } catch (error) {
+        console.log(error);
+      }
     },
-    async register(payload: any) {
+    async getDetailUser(payload: any, state: any) {
       try {
-        console.log(1);
-        const response = await axios.post(api.REGISTER, payload);
-        const { data } = response;
-        console.log(response);
-        showMessage("error", "Nhập lại mật khẩu chưa chính xác");
-        if (data?.status === "fail") {
-          // showMessage(data?.message, "success");
-          showMessage(data?.message, "Nhập lại mật khẩu chưa chính xác");
-        } else {
-          // showMessage(data?.message, "Nhập lại mật khẩu chưa chính xác");
+        const res = await axios.get(
+          `${api.GET_DETAIL_OF_USER_BUSINESS}/${payload}`,
+        );
+        if ((res.status = SUCCESS_CODE)) {
+          const data = res.data
+          console.log(res.data)
+          return data;
         }
-        return data;
-      } catch (err) {}
+        // dispatch.appModel.login()
+      } catch (error) {
+        console.log(error);
+      }
     },
-    async getUserInfo(payload: any) {
+    async lockNormalUser(payload: any, state: any) {
       try {
-      } catch (err) {}
+        const res = await axios.put(
+          getQueryURL(`${api.LOCK_ACCOUNT_ADMIN}/${payload?.user}`,{locked:payload?.locked}),
+        );
+        if (res.status != SUCCESS_CODE) {
+          // dispatch.appModel.setListUserBusiness(data);
+          showMessage(res?.data?.message, "error");
+          // console.log(res.data)
+          return;
+        }
+        // dispatch.appModel.login()
+        showMessage(res?.data?.message, "success");
+      } catch (error) {
+        console.log(error);
+      }
     },
+    async displayReviewNormalUser(payload: any, state: any) {
+      try {
+        const res = await axios.put(
+          getQueryURL(`${api.DISPLAY_REVIEW_ADMIN}/${payload?.user}`,{display:payload?.display}),
+        );
+        if (res.status != SUCCESS_CODE) {
+          // dispatch.appModel.setListUserBusiness(data);
+          showMessage(res?.data?.message, "error");
+          // console.log(res.data)
+          return;
+        }
+        // dispatch.appModel.login()
+        showMessage(res?.data?.message, "success");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    
   }),
 };

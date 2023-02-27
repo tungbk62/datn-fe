@@ -1,13 +1,17 @@
-
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
+import {
+  makeStyles,
+  useTheme,
+  Theme,
+  createStyles,
+} from "@material-ui/core/styles";
 const drawerWidth = 240;
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex',
+      display: "flex",
     },
     appBar: {
-      transition: theme.transitions.create(['margin', 'width'], {
+      transition: theme.transitions.create(["margin", "width"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
@@ -15,7 +19,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     appBarShift: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      transition: theme.transitions.create(['margin', 'width'], {
+      transition: theme.transitions.create(["margin", "width"], {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
@@ -24,7 +28,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(2),
     },
     hide: {
-      display: 'none',
+      display: "none",
     },
     drawer: {
       width: drawerWidth,
@@ -34,24 +38,24 @@ export const useStyles = makeStyles((theme: Theme) =>
       width: drawerWidth,
     },
     drawerHeader: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       padding: theme.spacing(0, 1),
       // necessary for content to be below app bar
       ...theme.mixins.toolbar,
-      justifyContent: 'flex-end',
+      justifyContent: "flex-end",
     },
     content: {
       flexGrow: 1,
       padding: theme.spacing(3),
-      transition: theme.transitions.create('margin', {
+      transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
       marginLeft: -drawerWidth,
     },
     contentShift: {
-      transition: theme.transitions.create('margin', {
+      transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
@@ -59,8 +63,8 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     logoCpn: {
       display: "flex",
-      width:"150px",
-      aspectRatio:"1.74",
+      width: "150px",
+      aspectRatio: "1.74",
       padding: "8px 8px 8px 0px",
       justifyContent: "flex-start",
       backgroundColor: "#fff",
@@ -72,6 +76,21 @@ export const useStyles = makeStyles((theme: Theme) =>
         height: "100%",
         objectFit: "cover",
       },
+    },
+    sectionDesktop: {
+      // display: 'none',
+      display: "flex",
+      // [theme.breakpoints.up('md')]: {
+      //   display: 'flex',
+      // },
+    },
+    toolBarFlexBox: {
+      display: "flex",
+      flexDirection: "row",
+      height:'100%',
+      width:"100%",
+      alignItems:'center',
+      justifyContent:'space-between'
     },
   }),
 );

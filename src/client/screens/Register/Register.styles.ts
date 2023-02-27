@@ -16,9 +16,10 @@ export const useStyles = makeStyles((theme: Theme) =>
       height: "100%",
     },
     registerFormContainer: {
-      backgroundColor: "#DDDDDD",
+      backgroundColor: "#ffffff",
       padding: "24px",
       borderRadius: 8,
+      width:"100%"
     },
     formRegisterItem: {
       width: "100%",
@@ -71,6 +72,9 @@ export const useStyles = makeStyles((theme: Theme) =>
         padding: "8px",
         fontSize: "16px",
       },
+      "& .MuiButton-label":{
+        color:"#ffffff"
+      },
     },
     selectStyles: {
       width: "100%",
@@ -79,5 +83,13 @@ export const useStyles = makeStyles((theme: Theme) =>
         height: "100% !important",
       },
     },
+    flexBox:{
+      display:'flex',
+      flexDirection:"column",
+      width:'100%',
+      justifyContent:'flex-start',
+      alignItems:'flex-start',
+      padding:"12px 0"
+    }
   }),
 );

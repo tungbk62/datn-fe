@@ -19,19 +19,23 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import { Tab, Tabs } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
+import { useRouter } from "next/router";
+import { BaseButton } from "../BaseButton";
 
 // const { Header, Sider, Content } = Layout;
 interface Props {
   children?: any;
   appState?: any;
   appReducer?: any;
+  authReducer?: any;
+  authState?: any;
 }
 type Anchor = "top" | "left" | "bottom" | "right";
 
 const AppWrapperComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
-
-  const { children, appState, appReducer } = props;
+  const router = useRouter();
+  const { children, appState, appReducer, authReducer, authState } = props;
   // console.log("appState",appState)
   const [collapsed, setCollapsed] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -64,6 +68,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const onPressLogout = async () => {
+    handleMenuClose();
+    await authReducer.logout();
+    router.push("/");
+  };
+
   const menuId = "primary-search-account-menu";
   const [stateDrawer, setStateDrawer] = React.useState({
     top: false,
@@ -94,17 +104,6 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
     >
-      {/* <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider /> */}
       <Tabs
         orientation="vertical"
         variant="scrollable"
@@ -113,17 +112,18 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         aria-label="Vertical tabs example"
         className={classes.tabsMoblile}
       >
-        <Tab label="Item One" />
-        <Tab label="Item Two" />
-        <Tab label="Item Three" />
-        <Tab label="Item Four" />
-        <Tab label="Item Five" />
-        <Tab label="Item Six" />
-        <Tab label="Item Seven" />
+        <Tab label="Nhà đất cho thuê" />
+        <Tab label="Nhà đất cho bán" />
+        <Tab label="Dự án" />
+        <Tab label="Tin tức" />
       </Tabs>
     </div>
   );
-
+  const onPressManagement = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+    authState?.isAdmin ? router.push("/admin/") : null;
+  };
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -134,46 +134,72 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
+      {authState?.isAdmin ? (
+        <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
+      ) : (
+        <></>
+      )}
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={onPressLogout}>Đăng xuất</MenuItem>
     </Menu>
   );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="notifications" color="inherit">
-          {/* <Badge overlap="rectangular" badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge> */}
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
+  const renderMobileMenu = () => {
+    if (authState?.isSignedIn) {
+      return (
+        <Menu
+          anchorEl={mobileMoreAnchorEl}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          id={mobileMenuId}
+          keepMounted
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          open={isMobileMenuOpen}
+          onClose={handleMobileMenuClose}
         >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
+          {authState?.isAdmin ? (
+            <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
+          ) : (
+            <></>
+          )}
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+            }}
+          >
+            Notifications
+          </MenuItem>
+          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+          <MenuItem onClick={onPressLogout}>Đăng xuất</MenuItem>
+        </Menu>
+      );
+    }
+    return (
+      <Menu
+        anchorEl={mobileMoreAnchorEl}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        id={mobileMenuId}
+        keepMounted
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isMobileMenuOpen}
+        onClose={handleMobileMenuClose}
+      >
+        <MenuItem onClick={onPressLogin}>Đăng nhập</MenuItem>
+        <MenuItem onClick={onPressRegister}>Đăng ký</MenuItem>
+      </Menu>
+    );
+  };
+  
+  const onPressLogin = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+    router.push("/login");
+  };
+  const onPressRegister = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+    router.push("/register");
+  };
 
   return (
     <Fragment>
@@ -215,10 +241,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
               scrollButtons="auto"
               aria-label="scrollable auto tabs example"
             >
-              <Tab label="Tab 1" />
-              <Tab label="Tab 2" />
-              <Tab label="Tab 3" />
-              <Tab label="Tab 5" />
+              <Tab label="Nhà đất cho thuê" />
+              <Tab label="Nhà đất cho bán" />
+              <Tab label="Dự án" />
+              <Tab label="Tin tức" />
             </Tabs>
 
             <div className={classes.grow} />
@@ -236,27 +262,54 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
                 // inputProps={{ "aria-label": "search" }}
               />
             </div>
-            <div className={classes.sectionDesktop}>
-              <IconButton color="inherit" aria-label="noti">
-                {appState?.notiAction && appState?.notiAction>0 ? (
-                  <Badge variant="dot" color="secondary">
+            {authState?.isSignedIn ? (
+              <div className={classes.sectionDesktop}>
+                <IconButton color="inherit" aria-label="noti">
+                  {appState?.notiAction && appState?.notiAction > 0 ? (
+                    <Badge variant="dot" color="secondary">
+                      <NotificationsIcon />
+                    </Badge>
+                  ) : (
                     <NotificationsIcon />
-                   </Badge>
-                ) : (
-                  <NotificationsIcon />
-                )}
-              </IconButton>
-              <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-            </div>
+                  )}
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </div>
+            ) : (
+              <div className={classes.sectionDesktop}>
+                <BaseButton
+                  className={classes.loginButton}
+                  onClick={onPressLogin}
+                >
+                  Đăng nhập
+                </BaseButton>
+                <BaseButton
+                  className={classes.registerButton}
+                  onClick={onPressRegister}
+                >
+                  Đăng ký
+                </BaseButton>
+                {/* <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton> */}
+              </div>
+            )}
             <div className={classes.sectionMobile}>
               <IconButton
                 aria-label="show more"
@@ -270,8 +323,22 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
             </div>
           </Toolbar>
         </AppBar>
-        {renderMobileMenu}
+        {renderMobileMenu()}
         {renderMenu}
+      </div>
+      <div className={classes.search2}>
+        <div className={classes.searchIcon}>
+          <SearchIcon />
+        </div>
+        <input
+          placeholder="Search…"
+          // className={{
+          //   root: classes.inputRoot,
+          //   input: classes.inputInput,
+          // }}
+          className={`${classes.inputRoot} ${classes.inputInput}`}
+          // inputProps={{ "aria-label": "search" }}
+        />
       </div>
       {children}
     </Fragment>
@@ -280,10 +347,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
 
 const mapState = (rootState: any) => ({
   appState: rootState.appModel,
+  authState: rootState.authModel,
 });
 
 const mapDispatch = (rootReducer: any) => ({
   appReducer: rootReducer.appModel,
+  authReducer: rootReducer.authModel,
 });
 
 const AppWrapper = React.memo(

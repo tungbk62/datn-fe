@@ -8,7 +8,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      // backgroundColor: "#E5E5E5",
+      // backgroundColor: "#ffff",
     },
     inputStyles: {},
     containerGird: {
@@ -18,9 +18,10 @@ export const useStyles = makeStyles((theme: Theme) =>
       height: "100%",
     },
     loginFormContainer: {
-      backgroundColor: "#DDDDDD",
+      backgroundColor: "#ffffff",
       padding: "24px",
       borderRadius: 8,
+      width:"100%"
     },
     formLoginItem: {
       width: "100%",
@@ -66,6 +67,9 @@ export const useStyles = makeStyles((theme: Theme) =>
       "&:hover": {
         opacity: "0.8",
         cursor: "pointer",
+      },
+      "& .MuiButton-label":{
+        color:"#ffffff"
       },
       [theme?.breakpoints?.down("sm")]: {
         padding: "8px",

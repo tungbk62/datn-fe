@@ -6,6 +6,7 @@ import { Grid, Paper, Button } from "@material-ui/core";
 
 import { Carousel } from "antd";
 import { CarouselItem } from "./components";
+import { useRouter } from "next/router";
 
 interface Props {
   children?: any;
@@ -18,10 +19,18 @@ interface Props {
 
 const AuthWrapperComponent = (props: Props) => {
   const { children, appState, appReducer,authReducer,authState } = props;
+  const router = useRouter();
   const classes = useStyles();
   useEffect(()=>{
     authReducer.getListProvince()
+    checKSignIn()
   },[])
+
+  const checKSignIn =()=>{
+    if(authState?.isSignedIn){
+      router.replace("/")
+    }
+  }
 
   return (
     <div className={classes.root}>
