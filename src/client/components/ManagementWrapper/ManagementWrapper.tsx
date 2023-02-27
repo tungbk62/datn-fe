@@ -87,7 +87,11 @@ const ManagementWrapperComponent = (props: Props) => {
         return;
 
       case 1:
-        return <PostAddIcon />;
+        {
+          console.log(index);
+          router.push("/admin/post-management")
+        }
+        return;
       case 2:
         return <ContactsIcon />;
       case 3:

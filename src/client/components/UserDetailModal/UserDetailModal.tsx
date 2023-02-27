@@ -19,7 +19,6 @@ interface Props {
 const Component = (props: Props): JSX.Element => {
   const classes = useStyles();
   const { visible, hideModal, userData } = props;
-  console.log(userData);
   return (
     <BaseModal
       visible={visible || false}
