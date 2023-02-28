@@ -1,5 +1,5 @@
-const BASE_URL_API = process.env.NEXT_PUBLIC_CURRENT_WEBSITE; // housing-anywhere
-
+// const BASE_URL_API = process.env.NEXT_PUBLIC_CURRENT_WEBSITE; // housing-anywhere
+const BASE_URL_API ="http://13.229.115.96:8080"
 const API_VERSION = "";
 const AUTH = "/auth";
 const USER = "/user";
