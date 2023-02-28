@@ -13,6 +13,7 @@ import {
 import { AuthWrapper } from "@components-client/AuthWrapper";
 import { connect } from "react-redux";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface Props {
   children?: any;
@@ -41,11 +42,11 @@ const LoginScreenComponent = (props: Props): JSX.Element => {
       .required("Bạn chưa nhập password!"),
   });
 
-  const onLogin = async(values: any) => {
+  const onLogin = async (values: any) => {
     console.log("Data:", values);
     const res = await authReducer.login(values);
     if (res) {
-      router.push("/")
+      router.push("/");
     }
   };
   return (
@@ -53,6 +54,9 @@ const LoginScreenComponent = (props: Props): JSX.Element => {
       <Fragment>
         <div className={classes.container}>
           <div className={classes.loginFormContainer}>
+            <div className={classes.logoCpn}>
+              <img src="/assets/logo_main.png" alt="" />
+            </div>
             <h3>Đăng nhập</h3>
             <div>
               <Formik
@@ -133,7 +137,21 @@ const LoginScreenComponent = (props: Props): JSX.Element => {
                             </div>
                           ) : null}
                         </div>
+                        
                       </div>
+                      <div className={classes.dontHaveAccountContainer}>
+                          <span className={classes.dontHaveAccountText}>
+                            Bạn chưa có tài khoản ?{" "}
+                          </span>
+                          <Link href="/register">
+                            <a>
+                              <span className={classes.registerText}>
+                                {" "}
+                                đăng ký
+                              </span>
+                            </a>
+                          </Link>
+                        </div>
                       <div className={classes.formLoginItem}>
                         <div className={classes.formLoginButton}>
                           <Button
@@ -175,5 +193,7 @@ const mapDispatch = (rootReducer: any) => ({
   authReducer: rootReducer.authModel,
 });
 
-const LoginScreen = React.memo(connect(mapState, mapDispatch)(LoginScreenComponent));
+const LoginScreen = React.memo(
+  connect(mapState, mapDispatch)(LoginScreenComponent),
+);
 export { LoginScreen };

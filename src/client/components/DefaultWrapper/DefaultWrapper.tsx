@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import "antd/dist/antd.css";
 import { useStyles } from "./DefaultWrapper.styles";
 import { connect } from "react-redux";
@@ -21,6 +21,8 @@ import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
 import { useRouter } from "next/router";
 import { BaseButton } from "../BaseButton";
+import { PostEditModal } from "../PostEditModal";
+import { Footer } from "./Footer";
 
 // const { Header, Sider, Content } = Layout;
 interface Props {
@@ -36,16 +38,27 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const router = useRouter();
   const { children, appState, appReducer, authReducer, authState } = props;
+  useEffect(() => {
+    getSystemsData();
+  }, []);
+  const getSystemsData = async () => {
+    await appReducer?.getListPostType();
+    await authReducer?.getListProvince();
+  };
+
   // console.log("appState",appState)
   const [collapsed, setCollapsed] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState() as any;
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     console.log(newValue);
     setValue(newValue);
+    setTimeout(() => {
+      setValue();
+    }, 1500);
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -189,7 +202,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       </Menu>
     );
   };
-  
+
   const onPressLogin = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
@@ -201,6 +214,14 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     router.push("/register");
   };
 
+  const [openModal, setOpenModal] = useState(false) as any;
+  const [dataModal, setDataModal] = useState() as any;
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+  const onPressOpenModal = () => {
+    setOpenModal(true);
+  };
   return (
     <Fragment>
       <Drawer
@@ -264,6 +285,17 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
             </div>
             {authState?.isSignedIn ? (
               <div className={classes.sectionDesktop}>
+                {authState?.isBusiness|| authState?.isAdmin ? (
+                  <BaseButton
+                    className={classes.loginButton}
+                    onClick={onPressOpenModal}
+                  >
+                    Đăng tin
+                  </BaseButton>
+                ) : (
+                  <></>
+                )}
+
                 <IconButton color="inherit" aria-label="noti">
                   {appState?.notiAction && appState?.notiAction > 0 ? (
                     <Badge variant="dot" color="secondary">
@@ -340,7 +372,15 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
           // inputProps={{ "aria-label": "search" }}
         />
       </div>
-      {children}
+      <div style={{ width: "100%", padding: "0px 12%" }}>{children}</div>
+      <Footer />
+      <PostEditModal
+        visible={openModal}
+        hideModal={() => {
+          handleCloseModal();
+        }}
+        // userData={dataModal}
+      />
     </Fragment>
   );
 };

@@ -1,24 +1,59 @@
-import React, {useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useStyles } from "./HomeScreen.styles";
 import { AppWrapper } from "@components-client/DefaultWrapper";
-import {ManagementWrapper} from "@components-client/ManagementWrapper"
+import { ManagementWrapper } from "@components-client/ManagementWrapper";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
-import TextField from '@material-ui/core/TextField';
+import TextField from "@material-ui/core/TextField";
+import { PostEditModal } from "@components-client/PostEditModal";
+import app from "next/app";
+import { connect } from "react-redux";
+import { NewPost,SuggestHousing } from "./components";
 
-const title = "Trang chủ"
-interface Props {}
+interface Props {
+  appState?: any;
+  appReducer?: any;
+  authReducer?: any;
+  authState?: any;
+}
 const HomeScreenComponent = (props: Props): JSX.Element => {
-
   const classes = useStyles();
-  
+  const { appState, appReducer, authReducer, authState } = props;
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(8);
+  const [publishPostData,setPublishPostData] = useState([])as any
+  useEffect(()=>{
+    getPublishPost()
+  },[])
+  const getPublishPost =async () => {
+    const params = {
+      page: page,
+      size:rowsPerPage
+    }
+    const dataRes = await appReducer?.getListPublishPost(params)
+    // if(data?.length<)
+    setPublishPostData(dataRes)
+  }
+
   return (
     <AppWrapper>
-      <div >
-        
-      </div>
+      <NewPost data ={publishPostData}/>
+      <SuggestHousing data ={publishPostData}/>
     </AppWrapper>
   );
 };
-const HomeScreen = React.memo(HomeScreenComponent);
+
+const mapState = (rootState: any) => ({
+  appState: rootState.appModel,
+  authState: rootState.authModel,
+});
+
+const mapDispatch = (rootReducer: any) => ({
+  appReducer: rootReducer.appModel,
+  authReducer: rootReducer.authModel,
+});
+
+const HomeScreen = React.memo(
+  connect(mapState, mapDispatch)(HomeScreenComponent),
+);
 export { HomeScreen };

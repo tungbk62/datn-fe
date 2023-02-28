@@ -319,13 +319,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                   errors.birthDay ? "inputBorderRed" : ""
                                 }
                                 placeholder="Ngày sinh"
-                                // prefix={
-                                //   <UserOutlined className="site-form-item-icon" />
-                                // }
                                 name="birthDay"
-                                // value={values.birthDay}
-                                // onChange={handleChange}
-                                // onBlur={handleBlur}
                               />
                               {touched.birthDay && errors.birthDay ? (
                                 <div className={classes.errorMess}>

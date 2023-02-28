@@ -19,7 +19,9 @@ export const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: "#ffffff",
       padding: "24px",
       borderRadius: 8,
-      width:"100%"
+      width:"100%",
+      justifyContent:'center',
+      minWidth:"538px"
     },
     formRegisterItem: {
       width: "100%",
@@ -90,6 +92,37 @@ export const useStyles = makeStyles((theme: Theme) =>
       justifyContent:'flex-start',
       alignItems:'flex-start',
       padding:"12px 0"
-    }
+    },
+    logoCpn: {
+      display: "flex",
+      width: "150px",
+      aspectRatio: "1.74",
+      padding: "8px 8px 8px 0px",
+      justifyContent: "center",
+      backgroundColor: "#fff",
+      // height: "32px",
+      // margin: "16px",
+      cursor: "pointer",
+      "& >img": {
+        width: "fit-content",
+        height: "100%",
+        objectFit: "cover",
+      },
+    },
+    dontHaveAccountContainer: {
+      marginTop: 12,
+      display:'flex',
+      justifyContent:'center',
+      marginBottom:12
+    },
+    dontHaveAccountText: {
+      color: '#080930',
+      fontSize: 15
+    },
+    registerText: {
+      color: "#ff7961",
+      fontSize: 15,
+      textDecoration: 'underline'
+    },
   }),
 );

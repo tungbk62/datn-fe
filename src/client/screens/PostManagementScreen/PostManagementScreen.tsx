@@ -25,21 +25,30 @@ import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutline
 import { UserDetailModal } from "@components-client/UserDetailModal";
 
 interface Column {
-  id: "id" | "name" | "email" | "type" | "imageUrl" | "";
+  id: "id" | "createdBy" | "title" | "type" | "mainImageUrl" | "" | "address";
   label: string;
   minWidth?: number;
+  maxWidth?: number;
   align?: "right";
   format?: (value: number) => string;
 }
 
 const columns: Column[] = [
-  { id: "imageUrl", label: "Người dùng", minWidth: 100 },
+  { id: "mainImageUrl", label: "Ảnh mô tả", minWidth: 100 },
   { id: "id", label: "Id", minWidth: 100 },
-  { id: "name", label: "Tên", minWidth: 100 },
+  { id: "createdBy", label: "Người viết", minWidth: 100 },
   {
-    id: "email",
-    label: "email",
+    id: "title",
+    label: "Tiêu đề",
     minWidth: 100,
+    maxWidth: 100,
+    // align: 'right',
+  },
+  {
+    id: "address",
+    label: "địa chỉ",
+    minWidth: 100,
+    maxWidth: 100,
     // align: 'right',
   },
   {
@@ -96,7 +105,7 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
       page: page,
       size: rowsPerPage,
     };
-    const tmp = await appReducer.getListUser(params);
+    const tmp = await appReducer.getListPostAdmin(params);
     if (tmp) {
       setRows(tmp);
     }
@@ -106,27 +115,27 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
     switch (type) {
       case "view":
         {
-          onPressOpenModal();
-          const data = await appReducer?.getDetailUser(item?.id);
-          setDataModal(data);
+          // onPressOpenModal();
+          // const data = await appReducer?.getDetailUser(item?.id);
+          // setDataModal(data);
         }
         return;
       case "review":
         {
-          const params = {
-            user: item?.id,
-            display: item?.displayReview ? 0 : 1,
-          };
-          await appReducer?.displayReviewNormalUser(params);
+          // const params = {
+          //   user: item?.id,
+          //   display: item?.displayReview ? 0 : 1,
+          // };
+          // await appReducer?.displayReviewNormalUser(params);
         }
         return;
       case "lock":
         {
-          const params = {
-            user: item?.id,
-            locked: item?.locked ? 1 : 0,
-          };
-          await appReducer?.lockNormalUser(params);
+          // const params = {
+          //   post: item?.id,
+          //   locked: item?.locked ? 1 : 0,
+          // };
+          // await appReducer?.lockNormalPost(params);
         }
         return;
 
@@ -205,7 +214,10 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{
+                    minWidth: column.minWidth,
+                    maxWidth: column.maxWidth,
+                  }}
                 >
                   {column.label}
                 </TableCell>
@@ -219,15 +231,16 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
                 return (
                   <TableRow key={index}>
                     <TableCell component="th" scope="row">
-                      <Avatar
-                        alt="Avatar"
-                        src={row.imageUrl}
-                        className={classes.small}
-                      />
+                      <div className={classes.logoCpn}>
+                        <img src={row.mainImageUrl} alt="" />
+                      </div>
                     </TableCell>
                     <TableCell component="th">{row.id}</TableCell>
-                    <TableCell align="left">{row.name}</TableCell>
-                    <TableCell align="left">{row.email}</TableCell>
+                    <TableCell align="left">{row.createdBy}</TableCell>
+                    <TableCell align="left">{row.title}</TableCell>
+                    <TableCell align="left">
+                      {row?.province + ", " + row?.district + ", " + row?.wards}
+                    </TableCell>
                     <TableCell align="right">
                       {renderFuncionIcon(row)}
                     </TableCell>

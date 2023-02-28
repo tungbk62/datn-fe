@@ -4,7 +4,10 @@ import Cookies from "js-cookie";
 import axios from "@app-client/helpers/axios";
 // import { api } from "@app-client/constants";
 import { formatDateUI, showMessage, getQueryURL } from "@app-client/helpers";
-import { setCommonAuthorizationToken,removeCommonAuthorizationToken } from "@app-client/helpers";
+import {
+  setCommonAuthorizationToken,
+  removeCommonAuthorizationToken,
+} from "@app-client/helpers";
 import { api } from "@app-client/constants";
 const SUCCESS_CODE = 200;
 
@@ -12,11 +15,12 @@ export const authModel: any = {
   state: {
     token: "",
     userInfo: null,
-    userData:null,
+    userData: null,
     listProvince: null,
     detailProvince: null,
-    isSignedIn:false,
-    isAdmin:false
+    isSignedIn: false,
+    isAdmin: false,
+    isBusiness: false,
   } as any, // initial state
   reducers: {
     setToken(state: any, payload: any) {
@@ -56,16 +60,22 @@ export const authModel: any = {
         userData: payload,
       };
     },
-    setIsSignedIn:(state: any, payload: any) => {
+    setIsSignedIn: (state: any, payload: any) => {
       return {
         ...state,
         isSignedIn: payload,
       };
     },
-    setIsAdmin:(state: any, payload: any) => {
+    setIsAdmin: (state: any, payload: any) => {
       return {
         ...state,
         isAdmin: payload,
+      };
+    },
+    setIsBusiness: (state: any, payload: any) => {
+      return {
+        ...state,
+        isBusiness: payload,
       };
     },
   },
@@ -124,20 +134,21 @@ export const authModel: any = {
         }
         const { data } = res;
         showMessage(res?.data?.message ?? "Đăng nhập thành công", "success");
-        dispatch.authModel.setToken(data?.accessToken)
-        dispatch.authModel.setIsSignedIn(true)
-        if(data?.type === "ADMIN"){
-          dispatch.authModel.setIsAdmin(true)
+        dispatch.authModel.setToken(data?.accessToken);
+        dispatch.authModel.setIsSignedIn(true);
+        if (data?.type === "ADMIN") {
+          dispatch.authModel.setIsAdmin(true);
+        } else if (data?.type === "BUSINESS") {
+          dispatch.authModel.setIsBusiness(true);
         }
         return data;
       } catch (err) {}
     },
     async logout(payload: any, state: any) {
       try {
-        
         dispatch.authModel.setUserData({});
-        dispatch.authModel.setIsSignedIn(false)
-        dispatch.authModel.setIsAdmin(false)
+        dispatch.authModel.setIsSignedIn(false);
+        dispatch.authModel.setIsAdmin(false);
         const res = await axios.post(api.LOGOUT);
         await removeCommonAuthorizationToken();
         // dispatch.authModel.setToken("")
@@ -147,7 +158,7 @@ export const authModel: any = {
         }
         const { data } = res;
         // showMessage(res?.data?.message ?? "Đăng nhập thành công", "success");
-        
+
         return data;
       } catch (err) {}
     },

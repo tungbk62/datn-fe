@@ -35,7 +35,8 @@ const AuthWrapperComponent = (props: Props) => {
   return (
     <div className={classes.root}>
       {/* <img src="/assets/auth-bg.jpeg" alt="" className={classes.bg} /> */}
-      <Grid className={classes.containerGird} container spacing={3}>
+      {children}
+      {/* <Grid className={classes.containerGird} container spacing={3}>
         <Grid className={classes.box} item xs={7}>
           <Carousel className={classes.carouselContainer} autoplay>
             <div>
@@ -71,7 +72,7 @@ const AuthWrapperComponent = (props: Props) => {
         <Grid className={classes.box} item xs={5}>
           {children}
         </Grid>
-      </Grid>
+      </Grid> */}
     </div>
   );
 };

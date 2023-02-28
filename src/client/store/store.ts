@@ -8,7 +8,7 @@ const persistPlugin: any = createPersistPlugin({
   version: 2,
   whitelist: [
     "authModel",
-    // "appModel",
+    "appModel",
   ],
 });
 

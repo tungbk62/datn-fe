@@ -13,6 +13,8 @@ export const useStyles = makeStyles((theme: Theme) =>
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       height: '100vh',
+      justifyContent:"center",
+      alignItems:'center'
     },
     containerGird: {
       padding: "0 5%",
