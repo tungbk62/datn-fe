@@ -1,0 +1,70 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowJs": true,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "es2017"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@app-client/*": [
+        "./src/client/*"
+      ],
+      "@store-client/*": [
+        "./src/client/store/*"
+      ],
+      "@components-client/*": [
+        "./src/client/components/*"
+      ],
+      "@configs-client/*": [
+        "./src/client/configs/*"
+      ],
+      "@constants-client/*": [
+        "./src/client/constants/*"
+      ],
+      "@helpers-client/*": [
+        "./src/client/helpers/*"
+      ],
+      "@hooks-client/*": [
+        "./src/client/hooks/*"
+      ],
+      "@screens-client/*": [
+        "./src/client/screens/*"
+      ],
+      "@styles-client/*": [
+        "./src/client/styles/*"
+      ],
+      "@server/*": [
+        "./src/server/*"
+      ],
+      "@models/*": [
+        "./src/server/models/*"
+      ]
+    },
+    "incremental": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+, "src/utils/data-source", "src/server/middlewares/authJwt.js", "src/server/middlewares/verifySignUp.js", "src/server/server.js", "src/server/models/user.model.js", "src/server/models/role.model.js", "src/server/models/index.js"  ]
+}
