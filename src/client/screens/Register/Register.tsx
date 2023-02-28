@@ -23,10 +23,11 @@ import {
 } from "@ant-design/icons";
 import { connect } from "react-redux";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const plainOptions = [
   { label: "Người đăng bài", value: "business" },
-  { label: "Thành viên", value: "" },
+  { label: "Thành viên", value: "customer" },
 ];
 
 interface Props {
@@ -85,7 +86,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
   const [dataDistrict, setDataDistrict] = useState([]) as any;
   const [dataAddress, setDataAddress] = useState([]) as any;
   const [idAddress, setIdAddress] = useState([]) as any;
-  const [value1, setValue1] = useState("Apple");
+  const [value1, setValue1] = useState("");
 
   const onChange1 = ({ target: { value } }: any) => {
     console.log("radio1 checked", value);
@@ -131,7 +132,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
     console.log("Data:", values);
     const res = await authReducer.register(values);
     if (res) {
-      router.push("/login")
+      router.push("/login");
     }
   };
 
@@ -140,6 +141,9 @@ const RegisterComponent = (props: Props): JSX.Element => {
       <Fragment>
         <div className={classes.container}>
           <div className={classes.registerFormContainer}>
+            <div className={classes.logoCpn}>
+              <img src="/assets/logo_main.png" alt="" />
+            </div>
             <h3>Đăng ký</h3>
             <div>
               <Formik
@@ -413,6 +417,18 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                 {errors.type}
                               </div>
                             ) : null}
+                          </div>
+                          <div className={classes.dontHaveAccountContainer}>
+                            <span className={classes.dontHaveAccountText}>
+                              Bạn đã có tài khoản ?{" "}
+                            </span>
+                            <Link href="/login">
+                              <a>
+                                <span className={classes.registerText}>
+                                  {" "}đăng nhập
+                                </span>
+                              </a>
+                            </Link>
                           </div>
                         </div>
                       </div>
