@@ -168,7 +168,22 @@ export const appModel: any = {
         return data;
       } catch (err) {}
     },
-
+    async getMyPost(payload: any, state: any) {
+      try {
+        const res = await axios.get(
+          getQueryURL(api.GET_MY_POST, payload),
+        );
+        if ((res.status = SUCCESS_CODE)) {
+          const data = res.data;
+          // dispatch.appModel.setListUserBusiness(data);
+          // console.log(res.data)
+          return data;
+        }
+        // dispatch.appModel.login()
+      } catch (error) {
+        console.log(error);
+      }
+    },
     /// publish
 
     async getListPublishPost(payload: any, state: any) {

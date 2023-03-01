@@ -104,6 +104,7 @@ export const useStyles = makeStyles((theme: any) => ({
   box: {
     height: "100%",
     width: "100%",
+    paddingBottom:"20px"
   },
   contentStyle: {
     height: "100%",

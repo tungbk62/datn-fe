@@ -41,6 +41,8 @@ export const api = {
   SIGN_UP_ACCOUNT_BUSINESS: BASE_URL_API + AUTH + PUBLIC + "/signup",
   LOGIN_ACCOUNT_BUSINESS: BASE_URL_API + AUTH + PUBLIC + "/signin",
 
+  GET_MY_POST:BASE_URL_API + POST + BUSINESS + "/list",
+
   /// POST
 
   GET_TYPE_POST: BASE_URL_API + POST + "/type",

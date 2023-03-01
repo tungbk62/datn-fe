@@ -31,7 +31,7 @@ const CustomApp: React.FC<AppProps> = ({ Component, pageProps }:any) => {
         <title>Apartment for rent</title>
         <link
           rel="icon"
-          href="https://vconomics.io/svg/icon-vconomics.svg"
+          href="https://cdn-icons-png.flaticon.com/512/1441/1441333.png"
         ></link>
       </Head>
       <ThemeProvider theme={theme}>

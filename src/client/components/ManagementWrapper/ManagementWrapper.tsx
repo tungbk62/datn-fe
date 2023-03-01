@@ -197,6 +197,7 @@ const ManagementWrapperComponent = (props: Props) => {
           </IconButton>
         </div>
         <Divider />
+        
         <List>
           {["Người dùng", "Bài Viết", "Liên hệ", "Báo cáo"].map(
             (text, index) => (
@@ -218,7 +219,7 @@ const ManagementWrapperComponent = (props: Props) => {
           )}
         </List>
         <Divider />
-        <List>
+        {/* <List>
           {["All mail", "Trash", "Spam"].map((text, index) => (
             <ListItem button key={text}>
               <ListItemIcon>
@@ -227,7 +228,7 @@ const ManagementWrapperComponent = (props: Props) => {
               <ListItemText primary={text} />
             </ListItem>
           ))}
-        </List>
+        </List> */}
       </Drawer>
       <main
         className={clsx(classes.content, {

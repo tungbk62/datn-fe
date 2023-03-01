@@ -6,3 +6,4 @@ export * from "./UserManagementScreen";
 export * from "./PostManagementScreen";
 export * from "./ForgotPassword";
 export * from "./PostDetailScreen";
+export * from "./UserDetailScreen";
