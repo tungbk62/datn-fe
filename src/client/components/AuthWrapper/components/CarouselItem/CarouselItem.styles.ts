@@ -3,7 +3,7 @@ export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
       height: "350px",
-      width:"80%",
+      width: "80%",
       backgroundColor: "#ffffff",
       borderRadius: 20,
       flexDirection: "column",
@@ -12,7 +12,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     img: {
       cursor: "pointer",
       width: "100%",
-      height:"100%",
+      height: "100%",
       // height:"300px",
       // marginTop: 13,
       marginBottom: 11,
@@ -22,34 +22,34 @@ export const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       overflow: "hidden",
       // borderRadius: 20,
-      borderTopLeftRadius:20,
-      borderTopRightRadius:20,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
       // "&:hover": {
       //   animation: "$scaleEffect 0.5s",
       // },
     },
-    cityText:{
+    cityText: {
       fontSize: 18,
       fontWeight: 500,
       letterSpacing: "-.2px",
-      maxHeight:28
+      maxHeight: 28,
     },
-    newsText:{
+    newsText: {
       fontSize: 18,
       fontWeight: 500,
       letterSpacing: "-.2px",
-      maxHeight:28
+      maxHeight: 28,
     },
-    textContainer:{
-      display:'flex',
-      flexDirection:"row",
-      width:"95%",
-      padding:"0px 5%",
-      height:"100%",
-      justifyContent:"space-between",
-      alignItems:"flex-end"
+    textContainer: {
+      display: "flex",
+      flexDirection: "row",
+      width: "95%",
+      padding: "0px 5%",
+      height: "100%",
+      justifyContent: "space-between",
+      alignItems: "flex-end",
       // maxHeight:"30px"
       // top
-    }
+    },
   }),
 );

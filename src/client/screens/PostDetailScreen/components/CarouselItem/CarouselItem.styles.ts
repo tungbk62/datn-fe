@@ -5,33 +5,23 @@ export const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.paper,
       width: 500,
     },
-
     container: {
-      height: "350px",
-      width: "80%",
+      width: "100%",
       backgroundColor: "#ffffff",
       borderRadius: 20,
-      flexDirection: "column",
-      display: "flex",
     },
     img: {
       cursor: "pointer",
       width: "100%",
       height: "100%",
-      // height:"300px",
-      // marginTop: 13,
       marginBottom: 11,
       minHeight: 300,
-      position: "relative",
-      justifyContent: "center",
+      // position: "relative",
       display: "flex",
+      justifyContent: "center",
       overflow: "hidden",
-      // borderRadius: 20,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      // "&:hover": {
-      //   animation: "$scaleEffect 0.5s",
-      // },
     },
     cityText: {
       fontSize: 18,
@@ -53,8 +43,6 @@ export const useStyles = makeStyles((theme: Theme) =>
       height: "100%",
       justifyContent: "space-between",
       alignItems: "flex-end",
-      // maxHeight:"30px"
-      // top
     },
   }),
 );
