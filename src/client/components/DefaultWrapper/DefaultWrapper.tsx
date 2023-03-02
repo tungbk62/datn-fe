@@ -41,7 +41,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   useEffect(() => {
     getSystemsData();
   }, []);
+  const [userDataId, setUserDataId] = useState() as any;
   const getSystemsData = async () => {
+    const userId = await authReducer?.getDetailUser();
+    setUserDataId(userId?.id);
     await appReducer?.getListPostType();
     await authReducer?.getListProvince();
   };
@@ -125,7 +128,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         aria-label="Vertical tabs example"
         className={classes.tabsMoblile}
       >
-        <Tab label="Nhà đất cho thuê" />
+        <Tab
+          label="Nhà đất cho thuê"
+          onClick={() => {
+            onRedirectHome();
+          }}
+        />
         <Tab label="Nhà đất cho bán" />
         <Tab label="Dự án" />
         <Tab label="Tin tức" />
@@ -136,6 +144,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     setAnchorEl(null);
     handleMobileMenuClose();
     authState?.isAdmin ? router.push("/admin/") : null;
+  };
+  const onPressToBusinessPage = () => {
+    if (!userDataId) {
+      return;
+    }
+    router.push(`/business/${userDataId}`);
   };
   const renderMenu = (
     <Menu
@@ -149,6 +163,11 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     >
       {authState?.isAdmin ? (
         <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
+      ) : (
+        <></>
+      )}
+      {authState?.isBusiness ? (
+        <MenuItem onClick={onPressToBusinessPage}>Bài đăng của tôi</MenuItem>
       ) : (
         <></>
       )}
@@ -172,6 +191,13 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         >
           {authState?.isAdmin ? (
             <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
+          ) : (
+            <></>
+          )}
+          {authState?.isBusiness ? (
+            <MenuItem onClick={onPressToBusinessPage}>
+              Bài đăng của tôi
+            </MenuItem>
           ) : (
             <></>
           )}
@@ -214,6 +240,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     router.push("/register");
   };
 
+  const onRedirectHome = () => {
+    router.push("/");
+  };
+
   const [openModal, setOpenModal] = useState(false) as any;
   const [dataModal, setDataModal] = useState() as any;
   const handleCloseModal = () => {
@@ -222,6 +252,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const onPressOpenModal = () => {
     setOpenModal(true);
   };
+
   return (
     <Fragment>
       <Drawer
@@ -262,7 +293,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
               scrollButtons="auto"
               aria-label="scrollable auto tabs example"
             >
-              <Tab label="Nhà đất cho thuê" />
+              <Tab
+                label="Nhà đất cho thuê"
+                onClick={() => {
+                  onRedirectHome();
+                }}
+              />
               <Tab label="Nhà đất cho bán" />
               <Tab label="Dự án" />
               <Tab label="Tin tức" />
@@ -285,7 +321,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
             </div>
             {authState?.isSignedIn ? (
               <div className={classes.sectionDesktop}>
-                {authState?.isBusiness|| authState?.isAdmin ? (
+                {authState?.isBusiness || authState?.isAdmin ? (
                   <BaseButton
                     className={classes.loginButton}
                     onClick={onPressOpenModal}

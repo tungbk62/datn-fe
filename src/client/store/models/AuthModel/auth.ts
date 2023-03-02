@@ -34,6 +34,12 @@ export const authModel: any = {
         listProvince: payload,
       };
     },
+    setDetailUser: (state: any, payload: string) => {
+      return {
+        ...state,
+        userInfo: payload,
+      };
+    },
     setDetailProvince: (state: any, payload: string) => {
       return {
         ...state,
@@ -87,6 +93,17 @@ export const authModel: any = {
           dispatch.authModel.setListProvince(
             res.data.map((item: any) => ({ value: item.id, label: item.name })),
           );
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getDetailUser(payload: any, state: any) {
+      try {
+        const res = await axios.get(api.GET_DETAIL_OF_USER, payload);
+        if ((res.status = SUCCESS_CODE)) {
+          dispatch.authModel.setDetailUser(res.data);
+          return res?.data;
         }
       } catch (error) {
         console.log(error);
