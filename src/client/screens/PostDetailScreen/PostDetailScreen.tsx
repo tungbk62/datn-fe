@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useStyles } from "./PostDetailScreen.styles";
-import { AppWrapper } from "@components-client/DefaultWrapper";
 import { connect } from "react-redux";
+import AwesomeSlider from "react-awesome-slider";
 import ReactHtmlParser from "react-html-parser";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import HomeIcon from "@material-ui/icons/Home";
@@ -11,13 +10,16 @@ import HotelIcon from "@material-ui/icons/Hotel";
 import BathtubIcon from "@material-ui/icons/Bathtub";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import EmailIcon from "@material-ui/icons/Email";
 import moment from "moment";
-import { Grid } from "@material-ui/core";
+import { Button, Grid, Modal } from "@material-ui/core";
 import { Tabs } from "antd";
-import AwesomeSlider from "react-awesome-slider";
 import "react-awesome-slider/dist/styles.css";
 import { CarouselItem } from "./components/CarouselItem";
+import { AppWrapper } from "@components-client/DefaultWrapper";
 import { formatMoney } from "@app-client/helpers";
+import { useStyles } from "./PostDetailScreen.styles";
+import { ContactForm } from "./components";
 
 interface Props {
   appState?: any;
@@ -31,6 +33,15 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const { appReducer } = props;
   const [publishPostData, setPublishPostData] = useState([]) as any;
+  const [contactFormOpened, setContactFormOpened] = useState(false);
+
+  const openContactForm = () => {
+    setContactFormOpened(true);
+  };
+
+  const closeContactForm = () => {
+    setContactFormOpened(false);
+  };
 
   useEffect(() => {
     getPublishPost();
@@ -52,7 +63,7 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
               </div>
             ))}
           </AwesomeSlider>
-          <Tabs defaultActiveKey="1" style={{ marginTop: 40 }}>
+          <Tabs defaultActiveKey="1" style={{ marginTop: 40, fontSize: 18 }}>
             <Tabs.TabPane tab="Tổng quan" key="1">
               <Grid style={{ paddingTop: "10px" }} container spacing={1}>
                 <Grid className={""} item xs={6}>
@@ -76,7 +87,6 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
                     </div>
                   </div>
                 </Grid>
-                {/* <Grid className={""} item xs={6}></Grid> */}
               </Grid>
               <Grid style={{ paddingTop: "10px" }} container spacing={1}>
                 <Grid className={""} item xs={6}>
@@ -122,7 +132,9 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
               <Grid style={{ paddingTop: "10px" }} container spacing={1}>
                 <Grid className={""} item xs={6}>
                   <div className={classes.containerText}>
-                    <div>Email :</div>
+                    <div className={classes.row}>
+                      <EmailIcon style={{ marginRight: 3 }} /> Email :
+                    </div>
                     <div>{publishPostData?.createdBy?.email}</div>
                   </div>
                 </Grid>
@@ -131,6 +143,37 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
                     <div>SDT:</div>
                     <div>{publishPostData?.createdBy?.phone}</div>
                   </div>
+                </Grid>
+              </Grid>
+              <Grid style={{ paddingTop: "10px" }} container spacing={1}>
+                <Grid className={""} item xs={6}>
+                  <div
+                    style={{ marginBottom: 7 }}
+                    className={classes.containerText}
+                  >
+                    <div>Được đăng bởi :</div>
+                    <div>
+                      {publishPostData?.createdBy?.firstName}{" "}
+                      {publishPostData?.createdBy?.lastName}
+                    </div>
+                  </div>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    style={{ color: "white" }}
+                    onClick={openContactForm}
+                  >
+                    Yêu cầu liên hệ lại
+                  </Button>
+                </Grid>
+                <Grid className={""} item xs={6}>
+                  {publishPostData?.createdBy?.ratingPoint && (
+                    <div className={classes.containerText}>
+                      <div>Điểm đánh giá:</div>
+                      <div>{publishPostData?.createdBy?.ratingPoint}</div>
+                    </div>
+                  )}
                 </Grid>
               </Grid>
             </Tabs.TabPane>
@@ -154,6 +197,13 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
           </div>
         </Grid>
       </div>
+      <Modal
+        className={classes.center}
+        open={contactFormOpened}
+        onClose={closeContactForm}
+      >
+        <ContactForm />
+      </Modal>
     </AppWrapper>
   );
 };

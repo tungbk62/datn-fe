@@ -72,5 +72,10 @@ export const useStyles = makeStyles((theme: Theme) =>
       flexDirection: "row",
       top: "50%",
     },
+    center: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
   }),
 );

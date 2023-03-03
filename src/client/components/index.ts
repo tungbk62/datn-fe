@@ -12,4 +12,4 @@ export * from "./TitleText";
 export * from "./BaseLazySkeletonImage";
 export * from "./BaseTextBoxSlice";
 export * from "./BaseTooltip";
-export * from "./LazyLoadingImage"
+export * from "./LazyLoadingImage";

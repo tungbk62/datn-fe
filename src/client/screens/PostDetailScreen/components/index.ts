@@ -1,1 +1,2 @@
-export * from "./CarouselItem"
+export * from "./CarouselItem";
+export * from "./ContactForm";
