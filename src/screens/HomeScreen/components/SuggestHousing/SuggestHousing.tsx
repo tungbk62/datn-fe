@@ -1,31 +1,25 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useStyles } from "./SuggestHousing.styles";
-import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Autoplay, Pagination, Navigation } from "swiper/core";
-SwiperCore.use([Autoplay, Pagination, Navigation]);
 import { TitleText } from "src/components/TitleText";
 import { BaseLazySkeletonImage } from "src/components/BaseLazySkeletonImage";
 import { BaseTextBoxSlice } from "src/components/BaseTextBoxSlice";
 import Skeleton from "react-loading-skeleton";
-import { useMediaQuery, useTheme } from "@material-ui/core";
-import { Carousel } from "antd";
-import { CarouselItem } from "src/components/AuthWrapper/components/CarouselItem";
-import { Grid, Paper, Button } from "@material-ui/core";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import { Grid } from "@material-ui/core";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import moment from "moment";
 import { useRouter } from "next/router";
+import { Post } from "../NewsAboutUs";
+
+SwiperCore.use([Autoplay, Pagination, Navigation]);
 
 interface Props {
-  data?: [];
+  data: Post[];
 }
 
 const SuggestHousingCpn = (props: Props): JSX.Element => {
   const { data } = props;
   const classes = useStyles();
-  const theme = useTheme();
   const router = useRouter();
   const onPressPost = (item: any) => {
     if (item?.id) {
@@ -34,7 +28,6 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
     console.log(item?.id);
   };
 
-  const [selectedIndex, setSelectedIndex] = useState(-1);
   const listRef = useRef(null) as any;
 
   useEffect(() => {
@@ -42,11 +35,6 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [data]);
-
-  const handleItemClick = (index: any) => {
-    setSelectedIndex(index);
-    // onItemClick(index);
-  };
 
   return (
     <div className={classes.categoryContainer}>
@@ -57,9 +45,9 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
           container
           spacing={0}
         >
-          {data?.map((item: any) => {
+          {data?.map((item: Post) => {
             return (
-              <Grid className={classes.box} item xs={3}>
+              <Grid key={item.id} className={classes.box} item xs={3}>
                 <div
                   className={classes.itemWrapper}
                   onClick={() => {
@@ -67,26 +55,22 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
                   }}
                 >
                   <div>
-                    <a href={item?.url} target="_blank">
-                      <BaseLazySkeletonImage
-                        scrollContainer="#-main"
-                        imageClassName={classes.imageCategory}
-                        imageUrl={item?.mainImageUrl}
-                        altText={item?.title || " "}
-                      />
-                    </a>
+                    <BaseLazySkeletonImage
+                      scrollContainer="#-main"
+                      imageClassName={classes.imageCategory}
+                      imageUrl={item.mainImageUrl}
+                      altText={item.title || " "}
+                    />
                   </div>
                   {!!item?.title ? (
                     <div className={classes.paddingBox}>
-                      <a href={item?.url} target="_blank">
-                        <BaseTextBoxSlice
-                          numberOfLines={2}
-                          additionalClassName={classes.categoryName}
-                          text={item?.title}
-                        >
-                          <h3>{item?.title}</h3>
-                        </BaseTextBoxSlice>
-                      </a>
+                      <BaseTextBoxSlice
+                        numberOfLines={2}
+                        additionalClassName={classes.categoryName}
+                        text={item?.title}
+                      >
+                        <h3>{item?.title}</h3>
+                      </BaseTextBoxSlice>
                       <BaseTextBoxSlice
                         numberOfLines={3}
                         additionalClassName={classes.descriptionName}
@@ -125,25 +109,6 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
             );
           })}
         </Grid>
-        {/* <Grid className={classes.box} item xs={4}>
-          {data?.length &&
-            data?.map((item: any, index: number) => {
-              if (index <= 7) {
-                return (
-                  <div
-                    onClick={() => {
-                      onPressPost(item);
-                    }}
-                    className={classes.categoryName}
-                    key={index}
-                  >
-                    {item?.title}
-                  </div>
-                );
-              }
-              return null;
-            })}
-        </Grid> */}
       </div>
     </div>
   );

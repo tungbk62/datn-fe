@@ -1,9 +1,8 @@
 import React, { Fragment } from "react";
 import { useStyles } from "./LoginScreen.styles";
-import { Grid, Paper, Button } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { Input } from "antd";
 import { Formik } from "formik";
-import * as yup from "yup";
 import {
   UserOutlined,
   SafetyOutlined,
@@ -14,41 +13,38 @@ import { AuthWrapper } from "src/components/AuthWrapper";
 import { connect } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { Dispatch, RootState } from "@src/store";
+import {
+  LoginSchema,
+  loginValidationSchema,
+} from "@src/store/models/auth/interface";
 
-interface Props {
-  children?: any;
-  appState?: any;
-  appReducer?: any;
-  title?: any;
-  authState?: any;
-  authReducer?: any;
-}
+const mapState = (rootState: RootState) => ({
+  appState: rootState.appModel,
+  authState: rootState.authModel,
+});
+
+const mapDispatch = (rootReducer: Dispatch) => ({
+  appReducer: rootReducer.appModel,
+  authReducer: rootReducer.authModel,
+});
+
+type StateProps = ReturnType<typeof mapState>;
+type DispatchProps = ReturnType<typeof mapDispatch>;
+type Props = StateProps & DispatchProps;
 
 const LoginScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
-  const { children, appState, appReducer, authReducer, authState } = props;
+  const { authReducer } = props;
   const router = useRouter();
-  const loginValidationSchema = yup.object().shape({
-    email: yup
-      .string()
-      .trim()
-      .email("Email chưa chính xác!")
-      .max(50, "Email quá dài!")
-      .required("Bạn chưa nhập email!"),
-    password: yup
-      .string()
-      .trim()
-      .min(8, "Password chưa chính xác!")
-      .required("Bạn chưa nhập password!"),
-  });
 
-  const onLogin = async (values: any) => {
-    console.log("Data:", values);
+  const onLogin = async (values: LoginSchema) => {
     const res = await authReducer.login(values);
     if (res) {
       router.push("/");
     }
   };
+
   return (
     <AuthWrapper>
       <Fragment>
@@ -174,23 +170,11 @@ const LoginScreenComponent = (props: Props): JSX.Element => {
               </Formik>
             </div>
           </div>
-          {/* </Grid> */}
-          {/* </Grid> */}
         </div>
       </Fragment>
     </AuthWrapper>
   );
 };
-
-const mapState = (rootState: any) => ({
-  appState: rootState.appModel,
-  authState: rootState.authModel,
-});
-
-const mapDispatch = (rootReducer: any) => ({
-  appReducer: rootReducer.appModel,
-  authReducer: rootReducer.authModel,
-});
 
 const LoginScreen = React.memo(
   connect(mapState, mapDispatch)(LoginScreenComponent),

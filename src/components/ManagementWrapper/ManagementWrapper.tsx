@@ -26,15 +26,25 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import { useRouter } from "next/router";
+import { Dispatch, RootState } from "@src/store";
 
-interface Props {
-  children?: any;
-  appState?: any;
-  appReducer?: any;
-  title?: any;
-  authReducer?: any;
-  authState?: any;
-}
+const mapState = (rootState: RootState) => ({
+  appState: rootState.appModel,
+  authState: rootState.authModel,
+});
+
+const mapDispatch = (rootReducer: Dispatch) => ({
+  appReducer: rootReducer.appModel,
+  authReducer: rootReducer.authModel,
+});
+
+type StateProps = ReturnType<typeof mapState>;
+type DispatchProps = ReturnType<typeof mapDispatch>;
+type Props = StateProps &
+  DispatchProps & {
+    title: string;
+    children: React.ReactNode;
+  };
 
 const ManagementWrapperComponent = (props: Props) => {
   const { children, title, authReducer, authState } = props;
@@ -46,21 +56,21 @@ const ManagementWrapperComponent = (props: Props) => {
   const handleDrawerOpen = () => {
     setOpen(true);
   };
+  const tabs = ["Người dùng", "Bài Viết", "Báo cáo", "Danh gia"];
+  if (authState.userInfo?.type === "BUSINESS") {
+    tabs.push("Liên hệ");
+  }
 
   const handleDrawerClose = () => {
     setOpen(false);
   };
 
   useEffect(() => {
-    checKIsAdmin();
-  }, []);
-
-  const checKIsAdmin = () => {
-    if (authState?.isAdmin) {
+    if (authState?.userInfo?.type === "ADMIN") {
       return;
     }
     router.replace("/");
-  };
+  }, [authState?.userInfo?.type, router]);
 
   const renderIcon = (index: number) => {
     switch (index) {
@@ -197,23 +207,20 @@ const ManagementWrapperComponent = (props: Props) => {
           </IconButton>
         </div>
         <Divider />
-
         <List>
-          {["Người dùng", "Bài Viết", "Liên hệ", "Báo cáo", "Danh gia"].map(
-            (text, index) => (
-              <ListItem
-                button
-                key={text}
-                onClick={() => {
-                  console.log(index);
-                  routeToScreen(index);
-                }}
-              >
-                <ListItemIcon>{renderIcon(index)}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ),
-          )}
+          {tabs.map((text, index) => (
+            <ListItem
+              button
+              key={text}
+              onClick={() => {
+                console.log(index);
+                routeToScreen(index);
+              }}
+            >
+              <ListItemIcon>{renderIcon(index)}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
         </List>
         <Divider />
       </Drawer>
@@ -229,17 +236,8 @@ const ManagementWrapperComponent = (props: Props) => {
   );
 };
 
-const mapState = (rootState: any) => ({
-  appState: rootState.appModel,
-  authState: rootState.authModel,
-});
-
-const mapDispatch = (rootReducer: any) => ({
-  appReducer: rootReducer.appModel,
-  authReducer: rootReducer.authModel,
-});
-
 const ManagementWrapper = React.memo(
   connect(mapState, mapDispatch)(ManagementWrapperComponent),
 );
+
 export { ManagementWrapper };

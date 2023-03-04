@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import "antd/dist/antd.css";
-import { useStyles } from "./DefaultWrapper.styles";
 import { connect } from "react-redux";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -27,24 +27,35 @@ import {
 } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
-import { useRouter } from "next/router";
+
+import { useStyles } from "./DefaultWrapper.styles";
 import { BaseButton } from "../BaseButton";
 import { PostEditModal } from "../PostEditModal";
 import { Footer } from "./Footer";
 import Gap from "../Gap";
 import InfoForm from "../InfoForm";
-
-interface Props {
-  children?: any;
-  appState?: any;
-  appReducer?: any;
-  authReducer?: any;
-  authState?: any;
-}
+import { Dispatch, RootState } from "@src/store";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
 type FormType = "edit-post" | "edit-profile";
+
+const mapState = (rootState: RootState) => ({
+  appState: rootState.appModel,
+  authState: rootState.authModel,
+});
+
+const mapDispatch = (rootReducer: Dispatch) => ({
+  appReducer: rootReducer.appModel,
+  authReducer: rootReducer.authModel,
+});
+
+type StateProps = ReturnType<typeof mapState>;
+type DispatchProps = ReturnType<typeof mapDispatch>;
+type Props = StateProps &
+  DispatchProps & {
+    children: React.ReactNode;
+  };
 
 const AppWrapperComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
@@ -64,8 +75,14 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const [postFormOpened, setPostFormOpened] = useState(false) as any;
 
   useEffect(() => {
+    const getSystemsData = async () => {
+      const userId = await authReducer?.getUserDetail();
+      setUserDataId(userId?.id);
+      await appReducer?.getListPostType();
+      await authReducer?.getListProvince();
+    };
     getSystemsData();
-  }, []);
+  }, [appReducer, authReducer]);
 
   const handleFormAction = (formType: FormType, open = true) => {
     return () => {
@@ -75,13 +92,6 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       }
       setInfoFormOpened(open);
     };
-  };
-
-  const getSystemsData = async () => {
-    const userId = await authReducer?.getDetailUser();
-    setUserDataId(userId?.id);
-    await appReducer?.getListPostType();
-    await authReducer?.getListProvince();
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -150,7 +160,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const onPressManagement = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
-    authState?.isAdmin ? router.push("/admin/") : null;
+    authState?.userInfo?.type === "ADMIN" ? router.push("/admin/") : null;
   };
   const onPressToBusinessPage = () => {
     if (!userDataId) {
@@ -170,10 +180,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {authState?.isAdmin && (
+      {authState?.userInfo?.type === "ADMIN" && (
         <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
       )}
-      {authState?.isBusiness && (
+      {authState?.userInfo?.type === "BUSINESS" && (
         <MenuItem onClick={onPressToBusinessPage}>Bài đăng của tôi</MenuItem>
       )}
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
@@ -195,10 +205,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
           open={isMobileMenuOpen}
           onClose={handleMobileMenuClose}
         >
-          {authState?.isAdmin && (
+          {authState?.userInfo?.type === "ADMIN" && (
             <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
           )}
-          {authState?.isBusiness && (
+          {authState?.userInfo?.type === "BUSINESS" && (
             <MenuItem onClick={onPressToBusinessPage}>
               Bài đăng của tôi
             </MenuItem>
@@ -373,7 +383,8 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
             </div>
             {authState?.isSignedIn ? (
               <div className={classes.sectionDesktop}>
-                {(authState?.isBusiness || authState?.isAdmin) && (
+                {(authState?.userInfo?.type === "ADMIN" ||
+                  authState?.userInfo?.type === "BUSINESS") && (
                   <BaseButton
                     className={classes.loginButton}
                     onClick={onPressOpenModal}
@@ -458,16 +469,6 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     </>
   );
 };
-
-const mapState = (rootState: any) => ({
-  appState: rootState.appModel,
-  authState: rootState.authModel,
-});
-
-const mapDispatch = (rootReducer: any) => ({
-  appReducer: rootReducer.appModel,
-  authReducer: rootReducer.authModel,
-});
 
 const AppWrapper = React.memo(
   connect(mapState, mapDispatch)(AppWrapperComponent),

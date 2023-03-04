@@ -38,7 +38,7 @@ const CustomApp: React.FC<AppProps> = ({ Component, pageProps }: any) => {
         <Component {...pageProps} />
       </ThemeProvider>
     </Provider>
-  ); //...pageProps to spread all props passed thru
+  );
 };
 
 export default CustomApp;

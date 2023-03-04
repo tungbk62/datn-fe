@@ -1,4 +1,4 @@
-import { UserDetailScreen } from "@app-client/screens";
+import { UserDetailScreen } from "@screens/UserDetailScreen";
 
 export default UserDetailScreen;
 

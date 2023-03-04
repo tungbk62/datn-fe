@@ -1,15 +1,13 @@
-import { init } from "@rematch/core";
-import * as models from "./models";
+import { RematchDispatch, RematchRootState, init } from "@rematch/core";
 import createPersistPlugin from "@rematch/persist";
 import storage from "redux-persist/lib/storage";
+import { RootModel, models } from "./models";
+
 const persistPlugin: any = createPersistPlugin({
   key: "root",
   storage,
   version: 2,
-  whitelist: [
-    "authModel",
-    "appModel",
-  ],
+  whitelist: ["authModel", "appModel"],
 });
 
 export const store = init({
@@ -17,4 +15,5 @@ export const store = init({
   plugins: [persistPlugin],
 });
 export const { getState, dispatch } = store;
-export type Dispatch = typeof store.dispatch;
+export type Dispatch = RematchDispatch<RootModel>;
+export type RootState = RematchRootState<RootModel>;

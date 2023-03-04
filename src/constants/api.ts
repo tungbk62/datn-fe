@@ -11,8 +11,6 @@ const ADDRESS = "/address";
 const PROVINCE = "/province";
 
 export const api = {
-  LOGIN: BASE_URL_API + API_VERSION + AUTH + "/login",
-  REGISTER: BASE_URL_API + API_VERSION + AUTH + "/register",
   GET_USER_INFOR: BASE_URL_API + API_VERSION + USER + "/user-info",
 
   /// User

@@ -1,15 +1,24 @@
-import { dispatch } from "@src/store/store";
-import { IUserState, IAppModel } from "./interface";
-import Cookies from "js-cookie";
-import axios from "@src/helpers/axios";
-// import axios from "axios";
+import { createModel } from "@rematch/core";
+
+import axios from "@helpers/axios";
 import { api } from "@src/constants";
-import { formatDateUI, showMessage } from "@src/helpers";
-import { setCommonAuthorizationToken } from "@src/helpers";
-import { getQueryURL, userDto } from "@src/helpers";
+import { getQueryURL, userDto, showMessage } from "@src/helpers";
+import { RootModel } from "..";
+
 const SUCCESS_CODE = 200;
 
-export const appModel: any = {
+type AppState = {
+  notiState: boolean;
+  notiContent: string;
+  notiTitle: string;
+  notiType: string;
+  notiAction: number;
+  token: string;
+  listUserBusiness: any;
+  listPostType: any;
+};
+
+export const appModel = createModel<RootModel>()({
   state: {
     notiState: false,
     notiContent: "",
@@ -19,24 +28,24 @@ export const appModel: any = {
     token: "",
     listUserBusiness: null,
     listPostType: null,
-  } as any,
+  } as AppState,
   reducers: {
-    setListUserBusiness: (state: any, payload: any) => {
+    setListUserBusiness: (state, payload: any) => {
       return {
         ...state,
         listUserBusiness: payload,
       };
     },
-    setListPostType: (state: any, payload: any) => {
+    setListPostType: (state, payload: any) => {
       return {
         ...state,
         listPostType: payload,
       };
     },
   },
-  effects: (dispatch: any) => ({
+  effects: dispatch => ({
     /// all
-    async getListPostType(payload: any, state: any) {
+    async getListPostType(payload?: any) {
       try {
         const res = await axios.get(api.GET_TYPE_POST, payload);
         if ((res.status = SUCCESS_CODE)) {
@@ -50,7 +59,7 @@ export const appModel: any = {
     },
 
     /// admin
-    async getListUser(payload: any, state: any) {
+    async getListUser(payload: any) {
       try {
         const res = await axios.get(
           getQueryURL(api.GET_LIST_USER_BUSINESS, payload),
@@ -58,10 +67,8 @@ export const appModel: any = {
         if ((res.status = SUCCESS_CODE)) {
           const data = res.data.map((item: any) => userDto(item));
           dispatch.appModel.setListUserBusiness(data);
-          // console.log(res.data)
           return data;
         }
-        // dispatch.appModel.login()
       } catch (error) {
         console.log(error);
       }
@@ -76,7 +83,6 @@ export const appModel: any = {
           console.log(res.data);
           return data;
         }
-        // dispatch.appModel.login()
       } catch (error) {
         console.log(error);
       }
@@ -89,12 +95,9 @@ export const appModel: any = {
           }),
         );
         if (res.status != SUCCESS_CODE) {
-          // dispatch.appModel.setListUserBusiness(data);
           showMessage(res?.data?.message, "error");
-          // console.log(res.data)
           return;
         }
-        // dispatch.appModel.login()
         showMessage(res?.data?.message, "success");
       } catch (error) {
         console.log(error);
@@ -108,12 +111,9 @@ export const appModel: any = {
           }),
         );
         if (res.status != SUCCESS_CODE) {
-          // dispatch.appModel.setListUserBusiness(data);
           showMessage(res?.data?.message, "error");
-          // console.log(res.data)
           return;
         }
-        // dispatch.appModel.login()
         showMessage(res?.data?.message, "success");
       } catch (error) {
         console.log(error);
@@ -126,11 +126,8 @@ export const appModel: any = {
         );
         if ((res.status = SUCCESS_CODE)) {
           const data = res.data;
-          // dispatch.appModel.setListUserBusiness(data);
-          // console.log(res.data)
           return data;
         }
-        // dispatch.appModel.login()
       } catch (error) {
         console.log(error);
       }
@@ -143,12 +140,9 @@ export const appModel: any = {
           }),
         );
         if (res.status != SUCCESS_CODE) {
-          // dispatch.appModel.setListUserBusiness(data);
           showMessage(res?.data?.message, "error");
-          // console.log(res.data)
           return;
         }
-        // dispatch.appModel.login()
         showMessage(res?.data?.message, "success");
       } catch (error) {
         console.log(error);
@@ -173,11 +167,8 @@ export const appModel: any = {
         const res = await axios.get(getQueryURL(api.GET_MY_POST, payload));
         if ((res.status = SUCCESS_CODE)) {
           const data = res.data;
-          // dispatch.appModel.setListUserBusiness(data);
-          // console.log(res.data)
           return data;
         }
-        // dispatch.appModel.login()
       } catch (error) {
         console.log(error);
       }
@@ -189,12 +180,8 @@ export const appModel: any = {
         const res = await axios.get(getQueryURL(api.GET_PUBLISH_POST, payload));
         if ((res.status = SUCCESS_CODE)) {
           const data = res.data;
-          // .map((item: any) => userDto(item));
-          // dispatch.appModel.setListUserBusiness(data);
-          // console.log(res.data)
           return data;
         }
-        // dispatch.appModel.login()
       } catch (error) {
         console.log(error);
       }
@@ -206,15 +193,11 @@ export const appModel: any = {
         );
         if ((res.status = SUCCESS_CODE)) {
           const data = res.data;
-          // .map((item: any) => userDto(item));
-          // dispatch.appModel.setListUserBusiness(data);
-          // console.log(res.data)
           return data;
         }
-        // dispatch.appModel.login()
       } catch (error) {
         console.log(error);
       }
     },
   }),
-};
+});

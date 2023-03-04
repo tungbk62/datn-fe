@@ -1,11 +1,5 @@
 import React, { CSSProperties, useState } from "react";
-import {
-  Button,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from "@material-ui/core";
+import { Button, FormControlLabel, Radio, RadioGroup } from "@material-ui/core";
 import TextArea from "antd/lib/input/TextArea";
 
 const styles: CSSProperties = {

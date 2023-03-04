@@ -1,10 +1,7 @@
 import React from "react";
 import { useStyles } from "./UserDetailModal.styles";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { BaseModal } from "../BaseModal";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import Avatar from "@material-ui/core/Avatar";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { Grid } from "@material-ui/core";
@@ -46,7 +43,9 @@ const Component = (props: Props): JSX.Element => {
           <Grid className={classes.box} item xs={8}>
             <div className={classes.textBox}>
               <div className={classes.textStyle}>Họ tên:</div>
-              <div className={classes.textStyle}>{userData?.firstName + " " + userData?.lastName}</div>
+              <div className={classes.textStyle}>
+                {userData?.firstName + " " + userData?.lastName}
+              </div>
             </div>
             <div className={classes.textBox}>
               <div className={classes.textStyle}>Email:</div>
@@ -63,11 +62,12 @@ const Component = (props: Props): JSX.Element => {
             <div className={classes.textBox}>
               <div className={classes.textStyle}>Địa chỉ:</div>
               <div className={classes.textStyle}>
-              {userData?.province +
-                // ", " +
-                // userData?.district +
-                ", " +
-                userData?.wards}</div>
+                {userData?.province +
+                  // ", " +
+                  // userData?.district +
+                  ", " +
+                  userData?.wards}
+              </div>
             </div>
           </Grid>
         </Grid>

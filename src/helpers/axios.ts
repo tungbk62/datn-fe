@@ -57,12 +57,8 @@ export const apiHelper = {
     url: string,
     data: TRequest,
     config?: any,
-  ): Promise<ApiResponse<TResponse>> {
-    const response = await axios.post<ApiResponse<TResponse>>(
-      url,
-      data,
-      config,
-    );
+  ): Promise<TResponse> {
+    const response = await axios.post<TResponse>(url, data, config);
     return response.data;
   },
   put: async function <TRequest, TResponse>(

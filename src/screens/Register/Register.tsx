@@ -47,8 +47,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
       .trim()
       .min(8, "Password chưa chính xác!")
       .required("Bạn chưa nhập password!"),
-    // passwordConfirm: yup.string().trim().min(8, "Invalid password confirm!"),
-    // .required("Please input password confirm!"),
     firstName: yup
       .string()
       .trim()
@@ -63,8 +61,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
       .string()
       .trim()
       .matches(/^[0-9]+$/, "Số điện thoại không hợp lệ")
-      // .min(10, "Số điện thoại phải có ít nhất 10 ký tự")
-      // .max(11, "Số điện thoại không được quá 11 ký tự")
       .required("Bạn chưa nhập sdt!"),
     birthDay: yup.string().required("Bạn chưa nhập ngày sinh!"),
     wardsId: yup.string().required("Bạn chưa nhập địa chỉ"),
