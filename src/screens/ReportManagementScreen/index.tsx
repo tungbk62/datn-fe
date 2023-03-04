@@ -20,10 +20,10 @@ import { apiHelper } from "@src/helpers";
 import { api } from "@src/constants";
 import { connect } from "react-redux";
 import { Dispatch, RootState } from "@src/store";
-import { Feedback } from "@src/store/models/auth/interface";
+import { Report } from "@src/store/models/auth/interface";
 
 interface Column {
-  id: "createdBy" | "content" | "rating" | "";
+  id: "phoneNumber" | "email" | "type" | "create-at" | "";
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -32,23 +32,11 @@ interface Column {
 }
 
 const columns: Column[] = [
-  { id: "createdBy", label: "Người viết", maxWidth: 80 },
-  {
-    id: "content",
-    label: "Nội dung",
-  },
-  {
-    id: "rating",
-    label: "Điểm đánh giá",
-    // minWidth: 0,
-    maxWidth: 30,
-  },
-  {
-    id: "",
-    label: "Thao tác",
-    maxWidth: 50,
-    align: "right",
-  },
+  { id: "phoneNumber", label: "Số điện thoại", maxWidth: 80 },
+  { id: "email", label: "Email" },
+  { id: "type", label: "Loại báo cáo", maxWidth: 30 },
+  { id: "create-at", label: "Ngày tạo", maxWidth: 30 },
+  { id: "", label: "Thao tác", maxWidth: 50, align: "right" },
 ];
 
 const mapState = (rootState: RootState) => ({
@@ -65,14 +53,13 @@ type StateProps = ReturnType<typeof mapState>;
 type DispatchProps = ReturnType<typeof mapDispatch>;
 type Props = StateProps & DispatchProps;
 
-const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
+const ReportManagementScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = useState<Feedback[]>([]);
-  const { appReducer } = props;
+  const [reports, setReports] = useState<Report[]>([]);
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, reports.length - page * rowsPerPage);
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
@@ -88,22 +75,20 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
   };
 
   useEffect(() => {
-    const getFeedbacks = async () => {
+    const getReports = async () => {
       const params = {
         page: page,
         size: rowsPerPage,
       };
       try {
-        const feedbacks = await apiHelper.get(api.listFeedback(6), params);
-        console.log(feedbacks);
-        if (feedbacks) {
-          setRows(feedbacks);
-        }
+        const res = await apiHelper.get<Report[]>(api.listReport, params);
+        console.log("reports", res);
+        setReports(res);
       } catch {
-        setRows([]);
+        setReports([]);
       }
     };
-    getFeedbacks();
+    getReports();
   }, [page, rowsPerPage]);
 
   const handleModalOpen = async (type?: string) => {
@@ -167,7 +152,7 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
   };
 
   return (
-    <ManagementWrapper title={"Đánh giá"}>
+    <ManagementWrapper title={"Bao cao"}>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -187,16 +172,15 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {reports
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(row => {
                 return (
                   <TableRow key={row.id}>
-                    <TableCell component="th">
-                      {row.createdBy.firstName}
-                    </TableCell>
-                    <TableCell align="left">{row.description}</TableCell>
-                    <TableCell align="left">{row.ratingPoint}</TableCell>
+                    <TableCell component="th">{row.phoneReport}</TableCell>
+                    <TableCell align="left">{row.emailReport}</TableCell>
+                    <TableCell align="left">{row.typeReportName}</TableCell>
+                    <TableCell align="left">{row.createdDate}</TableCell>
                     <TableCell align="right">
                       {renderFunctionIcon(row)}
                     </TableCell>
@@ -214,7 +198,7 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rows?.length * 10}
+        count={reports?.length * 10}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -232,8 +216,8 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
   );
 };
 
-const UserManagementScreen = React.memo(
-  connect(mapState, mapDispatch)(FeedbackManagementScreenComponent),
+const ReportManagementScreen = React.memo(
+  connect(mapState, mapDispatch)(ReportManagementScreenComponent),
 );
 
-export default UserManagementScreen;
+export default ReportManagementScreen;

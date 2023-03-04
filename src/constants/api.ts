@@ -67,4 +67,6 @@ export const api = {
 
   GET_DETAIL_PUBLISH_POST: BASE_URL_API + POST + PUBLIC,
   listFeedback: (userId: number) => `${BASE_URL_API}/review/public/${userId}`,
+  listReport: `${BASE_URL_API}/post/admin/report`,
+  typeEstate: `${BASE_URL_API}/type-estate/public`,
 };

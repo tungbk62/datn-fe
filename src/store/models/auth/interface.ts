@@ -90,3 +90,13 @@ export interface Feedback {
   createdBy: CreatedBy;
   createdDate: string;
 }
+
+export interface Report {
+  id: number;
+  typeReportName: string;
+  emailReport: string;
+  phoneReport: string;
+  handled: boolean;
+  handledBy?: any;
+  createdDate: string;
+}

@@ -86,7 +86,7 @@ const FeedbackForm: React.FC = () => {
   return (
     <div className={classes.container}>
       <form className={classes.form}>
-        <h2>Danh gia</h2>
+        <h2>Đánh giá</h2>
         <Rating
           name="simple-controlled"
           value={value}

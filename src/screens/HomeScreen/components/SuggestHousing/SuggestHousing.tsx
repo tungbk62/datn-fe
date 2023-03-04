@@ -13,6 +13,15 @@ import { Post } from "../NewsAboutUs";
 
 SwiperCore.use([Autoplay, Pagination, Navigation]);
 
+const currencyFormatter = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+
+  // These options are needed to round to whole numbers if that's what you want.
+  //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+  //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+});
+
 interface Props {
   data: Post[];
 }
@@ -38,7 +47,8 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
 
   return (
     <div className={classes.categoryContainer}>
-      <TitleText title={"Dự án cho bạn"} />
+      <TitleText title={"Kết quả tìm kiếm"} />
+      {/* <TitleText title={"Dự án cho bạn"} /> */}
       <div className={classes.swiperCategory}>
         <Grid
           style={{ paddingTop: "10px", paddingBottom: "10px" }}
@@ -71,6 +81,7 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
                       >
                         <h3>{item?.title}</h3>
                       </BaseTextBoxSlice>
+                      <span>{currencyFormatter.format(item?.priceMonth)}</span>
                       <BaseTextBoxSlice
                         numberOfLines={3}
                         additionalClassName={classes.descriptionName}

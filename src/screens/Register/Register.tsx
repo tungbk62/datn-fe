@@ -5,7 +5,6 @@ import { DatePicker, Input, Select as SelectAntd } from "antd";
 import { AuthWrapper } from "src/components/AuthWrapper";
 import { Radio } from "antd";
 import { Formik } from "formik";
-import * as yup from "yup";
 import {
   UserOutlined,
   SafetyOutlined,
@@ -15,6 +14,7 @@ import {
 import { connect } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { registerValidationSchema } from "@src/store/models/auth/interface";
 
 const plainOptions = [
   { label: "Người đăng bài", value: "business" },
@@ -35,39 +35,8 @@ const RegisterComponent = (props: Props): JSX.Element => {
   const { authReducer, authState } = props;
   console.log(authState);
   const router = useRouter();
-  const registerValidationSchema = yup.object().shape({
-    email: yup
-      .string()
-      .trim()
-      .email("Email chưa chính xác!")
-      .max(50, "Email quá dài!")
-      .required("Bạn chưa nhập email!"),
-    password: yup
-      .string()
-      .trim()
-      .min(8, "Password chưa chính xác!")
-      .required("Bạn chưa nhập password!"),
-    firstName: yup
-      .string()
-      .trim()
-      .max(20, "firstName too long!")
-      .required("Bạn chưa nhập tên!"),
-    lastName: yup
-      .string()
-      .trim()
-      .max(20, "Tên quá dài!")
-      .required("Bạn chưa nhập họ và tên đệm!"),
-    phone: yup
-      .string()
-      .trim()
-      .matches(/^[0-9]+$/, "Số điện thoại không hợp lệ")
-      .required("Bạn chưa nhập sdt!"),
-    birthDay: yup.string().required("Bạn chưa nhập ngày sinh!"),
-    wardsId: yup.string().required("Bạn chưa nhập địa chỉ"),
-    type: yup.string().required("Bạn chưa chọn vị trí"),
-  });
 
-  const [province, setProvince] = useState() as any;
+  const [province, setProvince] = useState("");
   const handleChangeProvince = (value: string) => {
     setProvince(value);
   };
@@ -101,14 +70,13 @@ const RegisterComponent = (props: Props): JSX.Element => {
     if (!province) {
       return;
     }
+    const getDataDistinct = async () => {
+      const data = await authReducer?.getDetailProvince(province);
+      console.log("data district", data);
+      setDataDistrict(data);
+    };
     getDataDistinct();
-  }, [province]);
-
-  const getDataDistinct = async () => {
-    const data = await authReducer?.getDetailProvince(province);
-    console.log("data district", data);
-    setDataDistrict(data);
-  };
+  }, [authReducer, province]);
 
   const onRegister = async (values: any) => {
     console.log("Data:", values);
@@ -212,7 +180,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
                               {errors.password}
                             </div>
                           ) : null}
-
                           <Grid
                             style={{ paddingTop: "10px" }}
                             container
@@ -275,10 +242,8 @@ const RegisterComponent = (props: Props): JSX.Element => {
                           >
                             <Grid className={""} item xs={6}>
                               <DatePicker
-                                // allowClear
                                 style={{
                                   width: "100%",
-                                  // height: "100%"
                                 }}
                                 onChange={value => {
                                   console.log(value?.format("yyyy-MM-DD"));
@@ -305,12 +270,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                 allowClear
                                 className={errors.phone ? "inputBorderRed" : ""}
                                 placeholder="Nhập SDT"
-                                // prefix={
-                                //   <UserOutlined className="site-form-item-icon" />
-                                // }
-                                // name="phone"
                                 value={values.phone}
-                                // onChange={handleChange}
                                 onChange={value => {
                                   setFieldValue(
                                     "phone",
@@ -326,7 +286,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
                               ) : null}
                             </Grid>
                           </Grid>
-
                           <Grid
                             style={{ paddingTop: "10px" }}
                             container
@@ -336,7 +295,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
                               <SelectAntd
                                 defaultValue="Chọn tỉnh"
                                 className={classes.selectStyles}
-                                // disabled
                                 options={authState?.listProvince}
                                 onChange={handleChangeProvince}
                               />
@@ -345,7 +303,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
                               <SelectAntd
                                 defaultValue="Chọn thành phố"
                                 className={classes.selectStyles}
-                                // disabled
                                 options={dataDistrict ? dataDistrict : []}
                                 onChange={handleChangeDistinct}
                               />
@@ -354,9 +311,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
                               <SelectAntd
                                 defaultValue="Chọn phường/xã"
                                 className={classes.selectStyles}
-                                // disabled
                                 options={dataAddress ? dataAddress : []}
-                                // onChange={handleChangeAddress}
                                 onChange={(e: any) => {
                                   handleChangeAddress(e);
                                   setFieldValue("wardsId", e);

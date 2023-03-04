@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "antd/dist/antd.css";
+import { Select as SelectAntd } from "antd";
 import { connect } from "react-redux";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -14,17 +15,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import {
-  FormControl,
-  Grid,
-  Input,
-  InputLabel,
-  Modal,
-  Select,
-  Slider,
-  Tab,
-  Tabs,
-} from "@material-ui/core";
+import { Grid, Input, Modal, Slider, Tab, Tabs } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
 
@@ -35,6 +26,10 @@ import { Footer } from "./Footer";
 import Gap from "../Gap";
 import InfoForm from "../InfoForm";
 import { Dispatch, RootState } from "@src/store";
+import { apiHelper } from "@src/helpers";
+import { api } from "@src/constants";
+import { District, TypeEstate, Ward } from "@src/store/models/app/interface";
+import PriceSlider from "./PriceSlider";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
@@ -136,6 +131,48 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
 
       setStateDrawer({ ...stateDrawer, [anchor]: open });
     };
+  const [province, setProvince] = useState("");
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
+  const [typeEstates, setTypeEstates] = useState<TypeEstate[]>([]);
+  const [idAddress, setIdAddress] = useState([]);
+  const [prices, setPrices] = useState<[number, number]>([500, 20000]);
+
+  useEffect(() => {
+    const getTypeEstates = async () => {
+      const res = await apiHelper.get<TypeEstate[]>(api.typeEstate);
+      setTypeEstates(res);
+    };
+    void getTypeEstates();
+  }, []);
+
+  useEffect(() => {
+    if (!province) {
+      return;
+    }
+    const getDataDistinct = async () => {
+      const data = await authReducer?.getDetailProvince(province);
+      console.log("data district", data);
+      setDistricts(data);
+    };
+    getDataDistinct();
+  }, [authReducer, province]);
+
+  const handleChangeProvince = (value: string) => {
+    setProvince(value);
+  };
+
+  const handleChangeDistinct = (value: string) => {
+    const tmp = authState?.detailProvince.filter(
+      (item: any) => item.id === value,
+    );
+    const tmp2 = tmp[0]?.value.map((item: any) => ({
+      value: item.id,
+      label: item.name,
+    }));
+    console.log(tmp2);
+    setWards(tmp2);
+  };
 
   const list = (anchor: Anchor) => (
     <div
@@ -299,92 +336,100 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
             </Tabs>
             <div className={classes.grow} />
             <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
               <input
-                placeholder="Search…"
+                placeholder="Tìm kiếm…"
                 className={`${classes.inputRoot} ${classes.inputInput}`}
               />
             </div>
-            <FormControl variant="filled" style={{ minWidth: 75 }}>
-              <InputLabel id="demo-simple-select-filled-label">Tinh</InputLabel>
-              <Select
-                labelId="demo-simple-select-filled-label"
-                id="demo-simple-select-filled"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ha Noi</MenuItem>
-                <MenuItem value={20}>Ha Tay</MenuItem>
-                <MenuItem value={30}>Ha Dong</MenuItem>
-              </Select>
-            </FormControl>
+            <SelectAntd
+              defaultValue="Chọn tỉnh"
+              options={authState?.listProvince}
+              onChange={handleChangeProvince}
+            />
             <Gap.XS />
-            <FormControl variant="filled" style={{ minWidth: 90 }}>
-              <InputLabel id="demo-simple-select-filled-label">
-                Huyen
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-filled-label"
-                id="demo-simple-select-filled"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ha Noi</MenuItem>
-                <MenuItem value={20}>Ha Tay</MenuItem>
-                <MenuItem value={30}>Ha Dong</MenuItem>
-              </Select>
-            </FormControl>
+            <SelectAntd
+              defaultValue="Chọn thành phố"
+              options={districts}
+              onChange={handleChangeDistinct}
+            />
             <Gap.XS />
-            <FormControl variant="filled">
-              <InputLabel id="demo-simple-select-filled-label">Xa</InputLabel>
-              <Select
-                labelId="demo-simple-select-filled-label"
-                id="demo-simple-select-filled"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ha Noi</MenuItem>
-                <MenuItem value={20}>Ha Tay</MenuItem>
-                <MenuItem value={30}>Ha Dong</MenuItem>
-              </Select>
-            </FormControl>
+            <SelectAntd
+              defaultValue="Chọn phường/xã"
+              options={wards}
+              onChange={(e: string) => {
+                console.log(e);
+                setIdAddress(e);
+              }}
+            />
             <Gap.XS />
-            <div style={{ width: 200 }}>
+            <Grid className={classes.pricingWrap} spacing={3}>
               <Typography id="input-slider" gutterBottom>
-                Gia
+                Giá
               </Typography>
+              <Gap.S />
               <Grid container spacing={2} alignItems="center">
-                <Grid item xs>
-                  <Slider
-                    // value={typeof value === "number" ? value : 0}
-                    aria-labelledby="input-slider"
+                <Input
+                  style={{ width: 80 }}
+                  value={prices[0]}
+                  onChange={e => setPrices([Number(e.target.value), prices[1]])}
+                  margin="dense"
+                  inputProps={{
+                    step: 10,
+                    min: 0,
+                    max: 100,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+                <Gap.XS />
+                <Grid item md>
+                  <PriceSlider
+                    value={prices}
+                    min={500}
+                    max={20000}
+                    onChange={(_, newVal) =>
+                      setPrices(newVal as [number, number])
+                    }
                   />
                 </Grid>
-                <Grid item>
-                  <Input
-                    style={{ width: 42 }}
-                    value={40}
-                    margin="dense"
-                    inputProps={{
-                      step: 10,
-                      min: 0,
-                      max: 100,
-                      type: "number",
-                      "aria-labelledby": "input-slider",
-                    }}
-                  />
-                </Grid>
+                <Gap.XS />
+                <Input
+                  style={{ width: 100 }}
+                  value={prices[1]}
+                  onChange={e => setPrices([prices[0], Number(e.target.value)])}
+                  margin="dense"
+                  inputProps={{
+                    step: 10,
+                    min: 0,
+                    max: 100,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
               </Grid>
-            </div>
+            </Grid>
+            <Gap.XS />
+            <SelectAntd
+              defaultValue="Loại hình cho thuê"
+              options={typeEstates.map(item => ({
+                label: item.name,
+                value: item.id,
+              }))}
+              onChange={(e: string) => {
+                console.log(e);
+              }}
+            />
+            <Gap.XS />
+            <BaseButton
+              className={classes.loginButton}
+              onClick={onPressOpenModal}
+            >
+              Tìm kiếm
+            </BaseButton>
+            <Gap.XS />
             {authState?.isSignedIn ? (
               <div className={classes.sectionDesktop}>
-                {(authState?.userInfo?.type === "ADMIN" ||
-                  authState?.userInfo?.type === "BUSINESS") && (
+                {authState?.userInfo?.type === "BUSINESS" && (
                   <BaseButton
                     className={classes.loginButton}
                     onClick={onPressOpenModal}

@@ -85,7 +85,7 @@ export const authModel = createModel<RootModel>()({
         showMessage(error.message, "error");
       }
     },
-    async getDetailProvince(payload: any) {
+    async getDetailProvince(payload: string) {
       try {
         const res = await axios.get(`${api.GET_LIST_PROVINCE}/${payload}`);
         if ((res.status = SUCCESS_CODE)) {

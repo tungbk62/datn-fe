@@ -22,7 +22,7 @@ const HomeScreen = (): JSX.Element => {
 
   return (
     <AppWrapper>
-      <NewPost data={publishPostData} />
+      {/* <NewPost data={publishPostData} /> */}
       <SuggestHousing data={publishPostData} />
     </AppWrapper>
   );

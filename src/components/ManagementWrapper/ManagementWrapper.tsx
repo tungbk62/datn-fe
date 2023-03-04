@@ -56,7 +56,7 @@ const ManagementWrapperComponent = (props: Props) => {
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  const tabs = ["Người dùng", "Bài Viết", "Báo cáo", "Danh gia"];
+  const tabs = ["Người dùng", "Bài Viết", "Báo cáo", "Đánh giá"];
   if (authState.userInfo?.type === "BUSINESS") {
     tabs.push("Liên hệ");
   }
@@ -79,11 +79,11 @@ const ManagementWrapperComponent = (props: Props) => {
       case 1:
         return <PostAddIcon />;
       case 2:
-        return <ContactsIcon />;
-      case 3:
         return <ReportIcon />;
-      case 4:
+      case 3:
         return <FeedbackIcon />;
+      case 4:
+        return <ContactsIcon />;
     }
   };
 
@@ -95,7 +95,6 @@ const ManagementWrapperComponent = (props: Props) => {
           router.push("/admin/user-management");
         }
         return;
-
       case 1:
         {
           console.log(index);
@@ -103,12 +102,13 @@ const ManagementWrapperComponent = (props: Props) => {
         }
         return;
       case 2:
-        return <ContactsIcon />;
+        router.push("/admin/report-management");
+        return;
       case 3:
-        return <ReportIcon />;
-      case 4: {
         router.push("/admin/feedback-management");
         return;
+      case 4: {
+        return <ReportIcon />;
       }
     }
   };
@@ -195,7 +195,7 @@ const ManagementWrapperComponent = (props: Props) => {
         }}
       >
         <div className={classes.drawerHeader}>
-          <div className={classes.logoCpn}>
+          <div className={classes.logoCpn} onClick={() => router.replace("/")}>
             <img src="/assets/logo_main.png" alt="" />
           </div>
           <IconButton onClick={handleDrawerClose}>
