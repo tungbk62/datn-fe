@@ -49,8 +49,8 @@ export interface ApiResponse<T> {
 }
 
 export const apiHelper = {
-  get: async function <T>(url: string): Promise<T> {
-    const response = await axios.get<T>(url);
+  get: async function <T>(url: string, params?: any): Promise<T> {
+    const response = await axios.get<T>(url, { params });
     return response.data;
   },
   post: async function <TRequest, TResponse>(

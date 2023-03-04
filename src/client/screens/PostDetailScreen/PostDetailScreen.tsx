@@ -21,7 +21,8 @@ import { CarouselItem } from "./components/CarouselItem";
 import { AppWrapper } from "@components-client/DefaultWrapper";
 import { formatMoney } from "@app-client/helpers";
 import { useStyles } from "./PostDetailScreen.styles";
-import { ContactForm, ReportForm } from "./components";
+import { ContactForm, FeedbackForm, ReportForm } from "./components";
+import Gap from "@app-client/components/Gap";
 
 interface Props {
   appState?: any;
@@ -31,7 +32,7 @@ interface Props {
   router: any;
 }
 
-type FormType = "contact" | "report";
+type FormType = "contact" | "report" | "feedback";
 
 const PostDetailScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
@@ -39,14 +40,26 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
   const [publishPostData, setPublishPostData] = useState([]) as any;
   const [contactFormOpened, setContactFormOpened] = useState(false);
   const [reportFormOpened, setReportFormOpened] = useState(false);
+  const [feedbackFormOpened, setFeedbackFormOpened] = useState(false);
 
   const handleFormAction = (formType: FormType, open = true) => {
     return () => {
-      if (formType === "contact") {
-        setContactFormOpened(open);
-        return;
+      switch (formType) {
+        case "contact": {
+          setContactFormOpened(open);
+          return;
+        }
+        case "report": {
+          setReportFormOpened(open);
+          return;
+        }
+        case "feedback": {
+          setFeedbackFormOpened(open);
+          return;
+        }
+        default:
+          break;
       }
-      setReportFormOpened(open);
     };
   };
 
@@ -65,9 +78,7 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
         <Grid className={classes.box} item xs={8}>
           <AwesomeSlider style={{ width: "80%" }}>
             {publishPostData?.imageList?.map((item: any, index: number) => (
-              <div key={index}>
-                <CarouselItem source={item?.url} />
-              </div>
+              <CarouselItem key={index} source={item?.url} />
             ))}
           </AwesomeSlider>
           <div
@@ -77,7 +88,6 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
               display: "flex",
               flexDirection: "row",
               justifyContent: "space-between",
-              alignItems: "center",
             }}
           >
             <FavoriteBorderIcon fontSize="large" className={classes.icon} />
@@ -190,6 +200,16 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
                   >
                     Yêu cầu liên hệ lại
                   </Button>
+                  <Gap.XXS />
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    style={{ color: "white" }}
+                    onClick={handleFormAction("feedback")}
+                  >
+                    đánh giá
+                  </Button>
                 </Grid>
                 <Grid className={""} item xs={6}>
                   {publishPostData?.createdBy?.ratingPoint && (
@@ -234,6 +254,13 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
         onClose={handleFormAction("report", false)}
       >
         <ReportForm />
+      </Modal>
+      <Modal
+        className={classes.center}
+        open={feedbackFormOpened}
+        onClose={handleFormAction("feedback", false)}
+      >
+        <FeedbackForm />
       </Modal>
     </AppWrapper>
   );

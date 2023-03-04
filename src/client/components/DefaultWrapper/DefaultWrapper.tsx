@@ -158,6 +158,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     }
     router.push(`/business/${userDataId}`);
   };
+  console.log("authstate", authState);
 
   const renderMenu = (
     <Menu

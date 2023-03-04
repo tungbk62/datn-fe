@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -16,10 +15,12 @@ import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutline
 
 import { UserDetailModal } from "@components-client/UserDetailModal";
 import { ManagementWrapper } from "@components-client/ManagementWrapper";
-import { useStyles } from "./PostManagementScreen.styles";
+import { useStyles } from "./styles";
+import { apiHelper } from "@app-client/helpers";
+import { api } from "@app-client/constants";
 
 interface Column {
-  id: "id" | "createdBy" | "title" | "type" | "mainImageUrl" | "" | "address";
+  id: "createdBy" | "content" | "rating" | "";
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -28,18 +29,16 @@ interface Column {
 }
 
 const columns: Column[] = [
-  { id: "mainImageUrl", label: "Ảnh mô tả", minWidth: 100 },
-  { id: "id", label: "Id", minWidth: 100 },
   { id: "createdBy", label: "Người viết", minWidth: 100 },
   {
-    id: "title",
-    label: "Tiêu đề",
+    id: "content",
+    label: "Noi dung",
     minWidth: 100,
     maxWidth: 100,
   },
   {
-    id: "address",
-    label: "địa chỉ",
+    id: "rating",
+    label: "Diem so",
     minWidth: 100,
     maxWidth: 100,
   },
@@ -58,7 +57,7 @@ interface Props {
   authState?: any;
 }
 
-const PostManagementScreenComponent = (props: Props): JSX.Element => {
+const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -81,55 +80,38 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
   };
 
   useEffect(() => {
-    getListUser();
-    // setRows(appState?.listUserBusiness)
+    getFeedbacks();
   }, [page]);
 
-  const getListUser = async () => {
+  const getFeedbacks = async () => {
     const params = {
       page: page,
       size: rowsPerPage,
     };
-    const tmp = await appReducer.getListPostAdmin(params);
-    if (tmp) {
-      setRows(tmp);
+    try {
+      const tmp = await apiHelper.get(api.listFeedback(6), params);
+      if (tmp) {
+        setRows(tmp);
+      }
+    } catch {
+      setRows([]);
     }
   };
 
   const handleModalOpen = async (type?: string) => {
     switch (type) {
       case "view":
-        {
-          // onPressOpenModal();
-          // const data = await appReducer?.getDetailUser(item?.id);
-          // setDataModal(data);
-        }
         return;
       case "review":
-        {
-          // const params = {
-          //   user: item?.id,
-          //   display: item?.displayReview ? 0 : 1,
-          // };
-          // await appReducer?.displayReviewNormalUser(params);
-        }
         return;
       case "lock":
-        {
-          // const params = {
-          //   post: item?.id,
-          //   locked: item?.locked ? 1 : 0,
-          // };
-          // await appReducer?.lockNormalPost(params);
-        }
         return;
-
       default:
         break;
     }
   };
 
-  const renderFuncionIcon = (item: any) => {
+  const renderFunctionIcon = (item: any) => {
     return (
       <div>
         <IconButton
@@ -139,7 +121,6 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
             handleModalOpen("review", item);
           }}
           edge="start"
-          // className={}
         >
           {item?.displayReview ? (
             <CheckBoxOutlinedIcon />
@@ -154,7 +135,6 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
             handleModalOpen("lock", item);
           }}
           edge="start"
-          // className={}
         >
           {item?.locked ? <LockIcon /> : <LockOpenIcon />}
         </IconButton>
@@ -165,7 +145,6 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
             handleModalOpen("view", item);
           }}
           edge="start"
-          // className={}
         >
           <VisibilityIcon />
         </IconButton>
@@ -205,19 +184,11 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
               .map((row: any, index: number) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell component="th" scope="row">
-                      <div className={classes.logoCpn}>
-                        <img src={row.mainImageUrl} alt="" />
-                      </div>
-                    </TableCell>
                     <TableCell component="th">{row.id}</TableCell>
                     <TableCell align="left">{row.createdBy}</TableCell>
                     <TableCell align="left">{row.title}</TableCell>
-                    <TableCell align="left">
-                      {row?.province + ", " + row?.district + ", " + row?.wards}
-                    </TableCell>
                     <TableCell align="right">
-                      {renderFuncionIcon(row)}
+                      {renderFunctionIcon(row)}
                     </TableCell>
                   </TableRow>
                 );
@@ -251,18 +222,4 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
   );
 };
 
-const mapState = (rootState: any) => ({
-  appState: rootState.appModel,
-  authState: rootState.authModel,
-});
-
-const mapDispatch = (rootReducer: any) => ({
-  appReducer: rootReducer.appModel,
-  authReducer: rootReducer.authModel,
-});
-
-const PostManagementScreen = React.memo(
-  connect(mapState, mapDispatch)(PostManagementScreenComponent),
-);
-
-export { PostManagementScreen };
+export default FeedbackManagementScreenComponent;

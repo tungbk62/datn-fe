@@ -20,6 +20,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import ContactsIcon from "@material-ui/icons/Contacts";
 import ReportIcon from "@material-ui/icons/Report";
+import FeedbackIcon from "@material-ui/icons/Feedback";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
@@ -72,10 +73,11 @@ const ManagementWrapperComponent = (props: Props) => {
       case 3:
         return <ReportIcon />;
       case 4:
-        return;
+        return <FeedbackIcon />;
     }
   };
-  const routerToScreen = (index: number) => {
+
+  const routeToScreen = (index: number) => {
     switch (index) {
       case 0:
         {
@@ -94,10 +96,13 @@ const ManagementWrapperComponent = (props: Props) => {
         return <ContactsIcon />;
       case 3:
         return <ReportIcon />;
-      case 4:
+      case 4: {
+        router.push("/admin/feedback-management");
         return;
+      }
     }
   };
+
   const menuId = "primary-search-account-menu";
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -194,36 +199,23 @@ const ManagementWrapperComponent = (props: Props) => {
         <Divider />
 
         <List>
-          {["Người dùng", "Bài Viết", "Liên hệ", "Báo cáo"].map(
+          {["Người dùng", "Bài Viết", "Liên hệ", "Báo cáo", "Danh gia"].map(
             (text, index) => (
               <ListItem
                 button
                 key={text}
                 onClick={() => {
                   console.log(index);
-                  routerToScreen(index);
+                  routeToScreen(index);
                 }}
               >
-                <ListItemIcon>
-                  {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                  {renderIcon(index)}
-                </ListItemIcon>
+                <ListItemIcon>{renderIcon(index)}</ListItemIcon>
                 <ListItemText primary={text} />
               </ListItem>
             ),
           )}
         </List>
         <Divider />
-        {/* <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List> */}
       </Drawer>
       <main
         className={clsx(classes.content, {

@@ -1,15 +1,14 @@
 // const BASE_URL_API = process.env.NEXT_PUBLIC_CURRENT_WEBSITE; // housing-anywhere
-const BASE_URL_API ="http://13.229.115.96:8080"
+const BASE_URL_API = "http://13.229.115.96:8080";
 const API_VERSION = "";
 const AUTH = "/auth";
 const USER = "/user";
 const POST = "/post";
 const PUBLIC = "/public";
-const PASSWORD = "/password";
 const ADMIN = "/admin";
 const BUSINESS = "/business";
-const ADDRESS = "/address"
-const PROVINCE = "/province"
+const ADDRESS = "/address";
+const PROVINCE = "/province";
 
 export const api = {
   LOGIN: BASE_URL_API + API_VERSION + AUTH + "/login",
@@ -41,7 +40,7 @@ export const api = {
   SIGN_UP_ACCOUNT_BUSINESS: BASE_URL_API + AUTH + PUBLIC + "/signup",
   LOGIN_ACCOUNT_BUSINESS: BASE_URL_API + AUTH + PUBLIC + "/signin",
 
-  GET_MY_POST:BASE_URL_API + POST + BUSINESS + "/list",
+  GET_MY_POST: BASE_URL_API + POST + BUSINESS + "/list",
 
   /// POST
 
@@ -61,12 +60,13 @@ export const api = {
 
   /// province
 
-  GET_LIST_PROVINCE : BASE_URL_API + ADDRESS + PUBLIC + PROVINCE,
-  GET_DETAIL_PROVINCE : BASE_URL_API + ADDRESS + PUBLIC + PROVINCE,
+  GET_LIST_PROVINCE: BASE_URL_API + ADDRESS + PUBLIC + PROVINCE,
+  GET_DETAIL_PROVINCE: BASE_URL_API + ADDRESS + PUBLIC + PROVINCE,
 
   /// publish
 
-  GET_PUBLISH_POST : BASE_URL_API + POST + PUBLIC + "/list",
+  GET_PUBLISH_POST: BASE_URL_API + POST + PUBLIC + "/list",
 
-  GET_DETAIL_PUBLISH_POST : BASE_URL_API + POST + PUBLIC 
+  GET_DETAIL_PUBLISH_POST: BASE_URL_API + POST + PUBLIC,
+  listFeedback: (userId: number) => `${BASE_URL_API}/review/public/${userId}`,
 };
