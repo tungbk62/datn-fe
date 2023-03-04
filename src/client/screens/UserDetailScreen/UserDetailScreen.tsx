@@ -9,61 +9,48 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import { connect } from "react-redux";
 import TableHead from "@material-ui/core/TableHead";
-import ReactHtmlParser from "react-html-parser";
 // import dynamic from "next/dynamic";
 // const ReactHtmlParser = dynamic(() => import("react-html-parser"), { ssr: false });
-import moment from "moment";
-import ScheduleIcon from "@material-ui/icons/Schedule";
 import { Grid, Paper } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
-import { formatMoney } from "@app-client/helpers";
-import { BaseTextBoxSlice } from "@components-client/BaseTextBoxSlice";
+import EditIcon from "@material-ui/icons/Edit";
 import Avatar from "@material-ui/core/Avatar";
 import { useRouter } from "next/router";
 import { TitleText } from "@components-client/TitleText";
-import CheckBoxOutlinedIcon from "@material-ui/icons/CheckBoxOutlined";
-import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutlineBlankOutlined";
-import { UserDetailModal } from "@components-client/UserDetailModal";
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
-
 
 interface Column {
   id: "id" | "createdBy" | "title" | "type" | "mainImageUrl" | "" | "address";
   label: string;
   minWidth?: number;
   maxWidth?: number;
-  align?: "right";
+  align?: "left" | "right";
   format?: (value: number) => string;
 }
 
 const columns: Column[] = [
-  { id: "mainImageUrl", label: "Ảnh mô tả", minWidth: 100 },
-  
+  { id: "mainImageUrl", label: "Ảnh mô tả", minWidth: 80 },
   {
     id: "title",
     label: "Tiêu đề",
-    minWidth: 100,
-    maxWidth: 100,
-    // align: 'right',
+    minWidth: 60,
+    maxWidth: 80,
   },
   {
     id: "address",
     label: "địa chỉ",
     minWidth: 100,
     maxWidth: 100,
-    // align: 'right',
   },
   {
     id: "",
     label: "Thao tác",
     minWidth: 100,
-    align: "right",
+    align: "left",
   },
 ];
-
 
 interface Props {
   appState?: any;
@@ -74,16 +61,15 @@ interface Props {
 }
 const UserDetailScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
-  const { appState, appReducer, authReducer, authState } = props;
+  const { appReducer, authReducer } = props;
   const router = useRouter();
-  // const [page, setPage] = React.useState(0);
-  // const [rowsPerPage, setRowsPerPage] = React.useState(8);
   const [userData, setUserData] = useState() as any;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(8);
   const [publishPostData, setPublishPostData] = useState([]) as any;
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, publishPostData.length - page * rowsPerPage);
+    rowsPerPage -
+    Math.min(rowsPerPage, publishPostData.length - page * rowsPerPage);
 
   useEffect(() => {
     getUserData();
@@ -106,12 +92,6 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
       setPublishPostData(tmp);
     }
   };
-  const onPressPost = (item: any) => {
-    if (item?.id) {
-      router.push(`/post/${item?.id}`);
-    }
-    console.log(item?.id);
-  };
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -126,16 +106,21 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  const handleModalOpen = async (type?: string, item?: any) => {
+
+  const handleModalOpen = async (
+    type: "edit-post" | "lock" | "hide",
+    item = null,
+  ) => {
+    console.log(item);
     switch (type) {
-      case "view":
+      case "edit-post":
         {
           // onPressOpenModal();
           // const data = await appReducer?.getDetailUser(item?.id);
           // setDataModal(data);
         }
         return;
-      case "addPic":
+      case "lock":
         {
           // const params = {
           //   user: item?.id,
@@ -144,7 +129,7 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
           // await appReducer?.displayReviewNormalUser(params);
         }
         return;
-      case "lock":
+      case "hide":
         {
           // const params = {
           //   post: item?.id,
@@ -158,39 +143,31 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
         break;
     }
   };
-  const renderFuncionIcon = (item: any) => {
+
+  const renderFunctionIcons = (item: any) => {
     return (
-      <div>
+      <div className={classes.functionIcons}>
         <IconButton
           color="inherit"
-          aria-label="open drawer"
           onClick={() => {
-            handleModalOpen("addPic", item);
+            handleModalOpen("edit-post", item);
           }}
-          edge="start"
-          // className={}
         >
-          <PhotoCamera />
+          <EditIcon />
         </IconButton>
         <IconButton
           color="inherit"
-          aria-label="open drawer"
           onClick={() => {
             handleModalOpen("lock", item);
           }}
-          edge="start"
-          // className={}
         >
           {item?.locked ? <LockIcon /> : <LockOpenIcon />}
         </IconButton>
         <IconButton
           color="inherit"
-          aria-label="open drawer"
           onClick={() => {
-            handleModalOpen("view", item);
+            handleModalOpen("hide", item);
           }}
-          edge="start"
-          // className={}
         >
           <VisibilityIcon />
         </IconButton>
@@ -210,8 +187,8 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
           container
           spacing={2}
         >
-          <Grid className={classes.box} item xs={4}>
-            <div style={{marginTop:"48px"}}></div>
+          <Grid item xs={3}>
+            <div style={{ marginTop: "48px" }}></div>
             <Paper elevation={3}>
               <div className={classes.paper}>
                 <div
@@ -248,36 +225,15 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
                 <div className={classes.textBox}>
                   <div className={classes.textStyle}>Địa chỉ:</div>
                   <div className={classes.textStyle}>
-                    {userData?.province +
-                      // ", " +
-                      // userData?.district +
-                      ", " +
-                      userData?.wards}
+                    {`${userData?.province}, ${userData?.wards}`}
                   </div>
                 </div>
               </div>
             </Paper>
           </Grid>
-          <Grid className={classes.box} item xs={8}>
+          <Grid className={classes.box} item xs={9}>
             <TitleText title={"Bài viết của tôi"} />
             <div style={{ paddingTop: "15px" }}></div>
-            {/* {publishPostData?.length &&
-              publishPostData?.map((item: any, index: number) => {
-                if (index <= 7) {
-                  return (
-                    <div
-                      onClick={() => {
-                        onPressPost(item);
-                      }}
-                      className={classes.categoryName}
-                      key={index}
-                    >
-                      {item?.title}
-                    </div>
-                  );
-                }
-                return null;
-              })} */}
             <TableContainer className={classes.container}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
@@ -312,14 +268,10 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
                           </TableCell>
                           <TableCell align="left">{row.title}</TableCell>
                           <TableCell align="left">
-                            {row?.province +
-                              ", " +
-                              row?.district +
-                              ", " +
-                              row?.wards}
+                            {`${row?.province}, ${row?.district}, ${row?.wards}`}
                           </TableCell>
                           <TableCell align="right">
-                            {renderFuncionIcon(row)}
+                            {renderFunctionIcons(row)}
                           </TableCell>
                         </TableRow>
                       );

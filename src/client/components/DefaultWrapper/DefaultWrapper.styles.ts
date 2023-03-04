@@ -14,7 +14,7 @@ export const useStyles = makeStyles((theme: Theme) =>
         display: "none",
       },
     },
-    tabsMoblile: {
+    tabsMobile: {
       borderRight: `1px solid ${theme.palette.divider}`,
     },
     list: {
@@ -168,7 +168,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     registerButton: {
       width: "100px",
-      marginLeft:"12px",
+      marginLeft: "12px",
       background: "#ff7961",
       fontSize: 14,
       color: "#000",
@@ -178,6 +178,11 @@ export const useStyles = makeStyles((theme: Theme) =>
       "&:hover": {
         // background: color.primaryColorHover,
       },
+    },
+    center: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
     },
   }),
 );

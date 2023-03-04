@@ -56,6 +56,7 @@
     "react-beautiful-dnd": "13.1.0",
     "react-dom": "^17.0.1",
     "react-html-parser": "^2.0.2",
+    "react-images-uploading": "^3.1.7",
     "react-kanban-dnd": "0.2.0",
     "react-lazyload": "^3.2.0",
     "react-loading-skeleton": "^3.0.3",

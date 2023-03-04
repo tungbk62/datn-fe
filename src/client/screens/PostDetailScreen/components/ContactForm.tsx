@@ -41,7 +41,7 @@ const ContactForm: React.FC = () => {
         color="primary"
         style={{ color: "white", width: "90%" }}
       >
-        Yêu cầu liên hệ lại
+        Gửi yêu cầu
       </Button>
     </form>
   );

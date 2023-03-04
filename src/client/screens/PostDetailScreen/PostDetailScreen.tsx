@@ -10,6 +10,8 @@ import HotelIcon from "@material-ui/icons/Hotel";
 import BathtubIcon from "@material-ui/icons/Bathtub";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
 import EmailIcon from "@material-ui/icons/Email";
 import moment from "moment";
 import { Button, Grid, Modal } from "@material-ui/core";
@@ -19,7 +21,7 @@ import { CarouselItem } from "./components/CarouselItem";
 import { AppWrapper } from "@components-client/DefaultWrapper";
 import { formatMoney } from "@app-client/helpers";
 import { useStyles } from "./PostDetailScreen.styles";
-import { ContactForm } from "./components";
+import { ContactForm, ReportForm } from "./components";
 
 interface Props {
   appState?: any;
@@ -29,18 +31,23 @@ interface Props {
   router: any;
 }
 
+type FormType = "contact" | "report";
+
 const PostDetailScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const { appReducer } = props;
   const [publishPostData, setPublishPostData] = useState([]) as any;
   const [contactFormOpened, setContactFormOpened] = useState(false);
+  const [reportFormOpened, setReportFormOpened] = useState(false);
 
-  const openContactForm = () => {
-    setContactFormOpened(true);
-  };
-
-  const closeContactForm = () => {
-    setContactFormOpened(false);
+  const handleFormAction = (formType: FormType, open = true) => {
+    return () => {
+      if (formType === "contact") {
+        setContactFormOpened(open);
+        return;
+      }
+      setReportFormOpened(open);
+    };
   };
 
   useEffect(() => {
@@ -63,7 +70,24 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
               </div>
             ))}
           </AwesomeSlider>
-          <Tabs defaultActiveKey="1" style={{ marginTop: 40, fontSize: 18 }}>
+          <div
+            style={{
+              marginTop: 40,
+              width: 80,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <FavoriteBorderIcon fontSize="large" className={classes.icon} />
+            <ErrorOutlineIcon
+              fontSize="large"
+              className={classes.icon}
+              onClick={handleFormAction("report")}
+            />
+          </div>
+          <Tabs defaultActiveKey="1" style={{ fontSize: 18 }}>
             <Tabs.TabPane tab="Tổng quan" key="1">
               <Grid style={{ paddingTop: "10px" }} container spacing={1}>
                 <Grid className={""} item xs={6}>
@@ -162,7 +186,7 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
                     variant="contained"
                     color="primary"
                     style={{ color: "white" }}
-                    onClick={openContactForm}
+                    onClick={handleFormAction("contact")}
                   >
                     Yêu cầu liên hệ lại
                   </Button>
@@ -200,9 +224,16 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
       <Modal
         className={classes.center}
         open={contactFormOpened}
-        onClose={closeContactForm}
+        onClose={handleFormAction("contact", false)}
       >
         <ContactForm />
+      </Modal>
+      <Modal
+        className={classes.center}
+        open={reportFormOpened}
+        onClose={handleFormAction("report", false)}
+      >
+        <ReportForm />
       </Modal>
     </AppWrapper>
   );

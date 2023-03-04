@@ -26,10 +26,9 @@ export const useStyles = makeStyles((theme: any) => ({
   },
   containerContent: {
     height: "400px",
-    overflowY:'scroll',
-    overflowX:"hidden",
-    maxHeight:420
-    
+    overflowY: "scroll",
+    overflowX: "hidden",
+    maxHeight: 420,
   },
   bannerContainer: {
     display: "flex",
@@ -150,7 +149,6 @@ export const useStyles = makeStyles((theme: any) => ({
     "& .ant-select-selector": {
       height: "100% !important",
     },
-    
   },
   flexBox: {
     display: "flex",
@@ -197,5 +195,16 @@ export const useStyles = makeStyles((theme: any) => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
+  },
+  images: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  deleteIcon: {
+    position: "absolute",
+    top: 2,
+    right: 2,
+    cursor: "pointer",
   },
 }));

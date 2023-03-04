@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "antd/dist/antd.css";
 import { useStyles } from "./DefaultWrapper.styles";
 import { connect } from "react-redux";
@@ -6,25 +6,34 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import InputBase from "@material-ui/core/InputBase";
 import Badge from "@material-ui/core/Badge";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import { Tab, Tabs } from "@material-ui/core";
+import {
+  FormControl,
+  Grid,
+  Input,
+  InputLabel,
+  Modal,
+  Select,
+  Slider,
+  Tab,
+  Tabs,
+} from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
 import { useRouter } from "next/router";
 import { BaseButton } from "../BaseButton";
 import { PostEditModal } from "../PostEditModal";
 import { Footer } from "./Footer";
+import Gap from "../Gap";
+import InfoForm from "../InfoForm";
 
-// const { Header, Sider, Content } = Layout;
 interface Props {
   children?: any;
   appState?: any;
@@ -32,36 +41,47 @@ interface Props {
   authReducer?: any;
   authState?: any;
 }
+
 type Anchor = "top" | "left" | "bottom" | "right";
+
+type FormType = "edit-post" | "edit-profile";
 
 const AppWrapperComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const router = useRouter();
   const { children, appState, appReducer, authReducer, authState } = props;
+  const [userDataId, setUserDataId] = useState();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const [stateDrawer, setStateDrawer] = useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
+  const [infoFormOpened, setInfoFormOpened] = useState(false);
+  const [postFormOpened, setPostFormOpened] = useState(false) as any;
+
   useEffect(() => {
     getSystemsData();
   }, []);
-  const [userDataId, setUserDataId] = useState() as any;
+
+  const handleFormAction = (formType: FormType, open = true) => {
+    return () => {
+      if (formType === "edit-post") {
+        setPostFormOpened(open);
+        return;
+      }
+      setInfoFormOpened(open);
+    };
+  };
+
   const getSystemsData = async () => {
     const userId = await authReducer?.getDetailUser();
     setUserDataId(userId?.id);
     await appReducer?.getListPostType();
     await authReducer?.getListProvince();
-  };
-
-  // console.log("appState",appState)
-  const [collapsed, setCollapsed] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const [value, setValue] = React.useState() as any;
-
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    console.log(newValue);
-    setValue(newValue);
-    setTimeout(() => {
-      setValue();
-    }, 1500);
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -78,6 +98,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
+    handleFormAction("edit-profile")();
   };
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -91,12 +112,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   };
 
   const menuId = "primary-search-account-menu";
-  const [stateDrawer, setStateDrawer] = React.useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
+
   const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
     (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -123,19 +139,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       <Tabs
         orientation="vertical"
         variant="scrollable"
-        value={value}
-        onChange={handleChange}
         aria-label="Vertical tabs example"
-        className={classes.tabsMoblile}
+        className={classes.tabsMobile}
+        value={0}
       >
-        <Tab
-          label="Nhà đất cho thuê"
-          onClick={() => {
-            onRedirectHome();
-          }}
-        />
-        <Tab label="Nhà đất cho bán" />
-        <Tab label="Dự án" />
         <Tab label="Tin tức" />
       </Tabs>
     </div>
@@ -151,6 +158,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     }
     router.push(`/business/${userDataId}`);
   };
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -161,15 +169,11 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {authState?.isAdmin ? (
+      {authState?.isAdmin && (
         <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
-      ) : (
-        <></>
       )}
-      {authState?.isBusiness ? (
+      {authState?.isBusiness && (
         <MenuItem onClick={onPressToBusinessPage}>Bài đăng của tôi</MenuItem>
-      ) : (
-        <></>
       )}
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={onPressLogout}>Đăng xuất</MenuItem>
@@ -177,6 +181,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
+
   const renderMobileMenu = () => {
     if (authState?.isSignedIn) {
       return (
@@ -189,17 +194,13 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
           open={isMobileMenuOpen}
           onClose={handleMobileMenuClose}
         >
-          {authState?.isAdmin ? (
+          {authState?.isAdmin && (
             <MenuItem onClick={onPressManagement}>Trang quản lý</MenuItem>
-          ) : (
-            <></>
           )}
-          {authState?.isBusiness ? (
+          {authState?.isBusiness && (
             <MenuItem onClick={onPressToBusinessPage}>
               Bài đăng của tôi
             </MenuItem>
-          ) : (
-            <></>
           )}
           <MenuItem
             onClick={() => {
@@ -234,27 +235,19 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     handleMobileMenuClose();
     router.push("/login");
   };
+
   const onPressRegister = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
     router.push("/register");
   };
 
-  const onRedirectHome = () => {
-    router.push("/");
-  };
-
-  const [openModal, setOpenModal] = useState(false) as any;
-  const [dataModal, setDataModal] = useState() as any;
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
   const onPressOpenModal = () => {
-    setOpenModal(true);
+    setPostFormOpened(true);
   };
 
   return (
-    <Fragment>
+    <>
       <Drawer
         anchor={"left"}
         open={stateDrawer["left"]}
@@ -282,28 +275,17 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
             <div className={classes.logoCpn}>
               <img src="/assets/logo_main.png" alt="" />
             </div>
-
             <Tabs
-              value={value}
-              onChange={handleChange}
               className={classes.tabsDesktop}
               indicatorColor="primary"
               textColor="primary"
               variant="scrollable"
               scrollButtons="auto"
               aria-label="scrollable auto tabs example"
+              value={0}
             >
-              <Tab
-                label="Nhà đất cho thuê"
-                onClick={() => {
-                  onRedirectHome();
-                }}
-              />
-              <Tab label="Nhà đất cho bán" />
-              <Tab label="Dự án" />
               <Tab label="Tin tức" />
             </Tabs>
-
             <div className={classes.grow} />
             <div className={classes.search}>
               <div className={classes.searchIcon}>
@@ -311,27 +293,93 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
               </div>
               <input
                 placeholder="Search…"
-                // className={{
-                //   root: classes.inputRoot,
-                //   input: classes.inputInput,
-                // }}
                 className={`${classes.inputRoot} ${classes.inputInput}`}
-                // inputProps={{ "aria-label": "search" }}
               />
+            </div>
+            <FormControl variant="filled" style={{ minWidth: 75 }}>
+              <InputLabel id="demo-simple-select-filled-label">Tinh</InputLabel>
+              <Select
+                labelId="demo-simple-select-filled-label"
+                id="demo-simple-select-filled"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ha Noi</MenuItem>
+                <MenuItem value={20}>Ha Tay</MenuItem>
+                <MenuItem value={30}>Ha Dong</MenuItem>
+              </Select>
+            </FormControl>
+            <Gap.XS />
+            <FormControl variant="filled" style={{ minWidth: 90 }}>
+              <InputLabel id="demo-simple-select-filled-label">
+                Huyen
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-filled-label"
+                id="demo-simple-select-filled"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ha Noi</MenuItem>
+                <MenuItem value={20}>Ha Tay</MenuItem>
+                <MenuItem value={30}>Ha Dong</MenuItem>
+              </Select>
+            </FormControl>
+            <Gap.XS />
+            <FormControl variant="filled">
+              <InputLabel id="demo-simple-select-filled-label">Xa</InputLabel>
+              <Select
+                labelId="demo-simple-select-filled-label"
+                id="demo-simple-select-filled"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ha Noi</MenuItem>
+                <MenuItem value={20}>Ha Tay</MenuItem>
+                <MenuItem value={30}>Ha Dong</MenuItem>
+              </Select>
+            </FormControl>
+            <Gap.XS />
+            <div style={{ width: 200 }}>
+              <Typography id="input-slider" gutterBottom>
+                Gia
+              </Typography>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs>
+                  <Slider
+                    // value={typeof value === "number" ? value : 0}
+                    aria-labelledby="input-slider"
+                  />
+                </Grid>
+                <Grid item>
+                  <Input
+                    style={{ width: 42 }}
+                    value={40}
+                    margin="dense"
+                    inputProps={{
+                      step: 10,
+                      min: 0,
+                      max: 100,
+                      type: "number",
+                      "aria-labelledby": "input-slider",
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </div>
             {authState?.isSignedIn ? (
               <div className={classes.sectionDesktop}>
-                {authState?.isBusiness || authState?.isAdmin ? (
+                {(authState?.isBusiness || authState?.isAdmin) && (
                   <BaseButton
                     className={classes.loginButton}
                     onClick={onPressOpenModal}
                   >
                     Đăng tin
                   </BaseButton>
-                ) : (
-                  <></>
                 )}
-
                 <IconButton color="inherit" aria-label="noti">
                   {appState?.notiAction && appState?.notiAction > 0 ? (
                     <Badge variant="dot" color="secondary">
@@ -366,16 +414,6 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
                 >
                   Đăng ký
                 </BaseButton>
-                {/* <IconButton
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton> */}
               </div>
             )}
             <div className={classes.sectionMobile}>
@@ -400,24 +438,23 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         </div>
         <input
           placeholder="Search…"
-          // className={{
-          //   root: classes.inputRoot,
-          //   input: classes.inputInput,
-          // }}
           className={`${classes.inputRoot} ${classes.inputInput}`}
-          // inputProps={{ "aria-label": "search" }}
         />
       </div>
       <div style={{ width: "100%", padding: "0px 12%" }}>{children}</div>
       <Footer />
       <PostEditModal
-        visible={openModal}
-        hideModal={() => {
-          handleCloseModal();
-        }}
-        // userData={dataModal}
+        visible={postFormOpened}
+        hideModal={handleFormAction("edit-post", false)}
       />
-    </Fragment>
+      <Modal
+        className={classes.center}
+        open={infoFormOpened}
+        onClose={handleFormAction("edit-profile", false)}
+      >
+        <InfoForm provinces={[]} onSubmit={console.log} />
+      </Modal>
+    </>
   );
 };
 
@@ -434,4 +471,5 @@ const mapDispatch = (rootReducer: any) => ({
 const AppWrapper = React.memo(
   connect(mapState, mapDispatch)(AppWrapperComponent),
 );
+
 export { AppWrapper };

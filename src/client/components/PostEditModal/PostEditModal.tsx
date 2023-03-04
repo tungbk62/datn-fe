@@ -1,47 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useStyles } from "./PostEditModal.styles";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { BaseModal } from "../BaseModal";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import Avatar from "@material-ui/core/Avatar";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { Grid } from "@material-ui/core";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import { Button, Grid } from "@material-ui/core";
 import { BaseButton } from "../BaseButton";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { connect } from "react-redux";
 import { debounce } from "lodash";
 
-import {
-  UserOutlined,
-  SafetyOutlined,
-  DollarCircleOutlined,
-  FileTextOutlined,
-} from "@ant-design/icons";
+import { DollarCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
-import {
-  AutoComplete,
-  Button as ButtonAntd,
-  DatePicker,
-  Input,
-  InputNumber,
-  Row,
-  Select as SelectAntd,
-  Tooltip,
-  Radio,
-} from "antd";
+import { Input } from "antd";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 
 import "react-quill/dist/quill.snow.css";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
+import ImageUploading, { ImageListType } from "react-images-uploading";
+import Gap from "../Gap";
 
 interface Props {
   visible?: boolean;
@@ -52,6 +36,7 @@ interface Props {
   authState?: any;
   authReducer?: any;
 }
+
 const modules = {
   toolbar: [
     [{ header: "1" }, { header: "2" }, { header: "3" }, { font: [] }],
@@ -71,10 +56,6 @@ const modules = {
     matchVisual: false,
   },
 };
-const plainOptions = [
-  { label: "Người đăng bài", value: "business" },
-  { label: "Thành viên", value: "customer" },
-];
 
 const Component = (props: Props): JSX.Element => {
   const classes = useStyles();
@@ -82,9 +63,6 @@ const Component = (props: Props): JSX.Element => {
     props;
   const [value, setValue] = useState("");
 
-  /// delete
-
-  ///
   const registerValidationSchema = yup.object().shape({
     title: yup
       .string()
@@ -108,15 +86,12 @@ const Component = (props: Props): JSX.Element => {
     room: yup.number().required("Bạn chưa nhập số phòng!"),
     bathRoom: yup.number().required("Bạn chưa nhập số nhà vệ sinh!"),
     expiredDate: yup.string().nullable(),
-    // .required("Bạn chưa nhập ngày hết hạn!"),
     furniture: yup
       .string()
       .trim()
       .max(20, "Mô tả nội thất!")
       .required("Bạn chưa nhập mô tả nội thất!"),
     typePostId: yup.number().required("Bạn chưa nhập loại bài viết!"),
-
-    // type: yup.string().required("Bạn chưa chọn vị trí"),
   });
   const handleChangeProvince2 = (
     event: React.ChangeEvent<{ value: unknown }>,
@@ -139,9 +114,6 @@ const Component = (props: Props): JSX.Element => {
     }));
     setDataAddress(tmp2);
   };
-  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
-    new Date("2014-08-18T21:11:54"),
-  );
   const handleChangeAddress2 = (
     event: React.ChangeEvent<{ value: unknown }>,
   ) => {
@@ -149,27 +121,10 @@ const Component = (props: Props): JSX.Element => {
   };
   const [labelProvince, setLabelProvince] = useState() as any;
   const [province, setProvince] = useState() as any;
-  const handleChangeProvince = (value: string) => {
-    setProvince(value);
-  };
   const [dataDistrict, setDataDistrict] = useState([]) as any;
   const [dataAddress, setDataAddress] = useState([]) as any;
   const [idAddress, setIdAddress] = useState([]) as any;
-
-  const handleChangeDistinct = (value: string) => {
-    const tmp = authState?.detailProvince?.filter(
-      (item: any) => item.id === value,
-    );
-    const tmp2 = tmp[0]?.value.map((item: any) => ({
-      value: item.id,
-      label: item.name,
-    }));
-    setDataAddress(tmp2);
-  };
-
-  const handleChangeAddress = (value: string) => {
-    setIdAddress(value);
-  };
+  const [images, setImages] = useState<ImageListType>([]);
 
   useEffect(() => {
     if (!province) {
@@ -177,7 +132,6 @@ const Component = (props: Props): JSX.Element => {
     }
     getDataDistinct();
   }, [province]);
-
 
   const getDataDistinct = async () => {
     const data = await authReducer?.getDetailProvince(province);
@@ -187,21 +141,13 @@ const Component = (props: Props): JSX.Element => {
   const onPost = async (values: any) => {
     const res = await appReducer?.createPost(values);
     if (res) {
-      // router.push("/");
-      /// refresh
-      setValue("")
-      hideModal()
-
+      setValue("");
+      hideModal();
     }
   };
 
   return (
-    <BaseModal
-      visible={visible || false}
-      handleClose={hideModal as any}
-      // modalClass={classes.modal}
-      // contentClass={classes.modalContent}
-    >
+    <BaseModal visible={visible || false} handleClose={hideModal as any}>
       <div className={classes.container}>
         <Fade in={visible}>
           <div className={classes.bannerContainer}>
@@ -210,7 +156,6 @@ const Component = (props: Props): JSX.Element => {
             </div>
           </div>
         </Fade>
-
         <div className={classes.containerContent}>
           <Formik
             validateOnChange={false}
@@ -281,21 +226,12 @@ const Component = (props: Props): JSX.Element => {
                       <ReactQuill
                         theme="snow"
                         value={value}
-                        // onChange={value => {
-                        //   console.log(value)
-                        //   setValue(value);
-                        // }}
                         onChange={debounce(value => {
                           console.log(value);
                           setValue(value);
                           setFieldValue("description", value);
                         }, 1000)}
                         modules={modules}
-                        // value={state.editorHtml}
-                        // modules={Editor.modules}
-                        // formats={Editor.formats}
-                        // bounds={'.app'}
-                        // placeholder={props.placeholder}
                       />
                       {touched.description && errors.description ? (
                         <div className={classes.errorMess}>
@@ -483,31 +419,6 @@ const Component = (props: Props): JSX.Element => {
                         </Grid>
 
                         <Grid className={""} item xs={4}>
-                          {/* <DatePicker
-                            // allowClear
-                            style={{
-                              width: "100%",
-                              // height: "100%"
-                            }}
-                            onChange={value => {
-                              console.log(value?.format("yyyy-MM-DD"));
-                              setFieldValue(
-                                "expiredDate",
-                                value ? value.format("yyyy-MM-DD") : null,
-                              );
-                            }}
-                            format="DD/MM/YYYY"
-                            className={
-                              errors.expiredDate ? "inputBorderRed" : ""
-                            }
-                            placeholder="Nhập ngày hết hạn"
-                            name="expiredDate"
-                          />
-                          {touched.expiredDate && errors.expiredDate ? (
-                            <div className={classes.errorMess}>
-                              {errors.expiredDate}
-                            </div>
-                          ) : null} */}
                           <Input
                             allowClear
                             className={errors.title ? "inputBorderRed" : ""}
@@ -600,7 +511,54 @@ const Component = (props: Props): JSX.Element => {
                           {errors.typePostId}
                         </div>
                       ) : null}
-
+                      <ImageUploading
+                        multiple
+                        value={images}
+                        onChange={imageList => setImages(imageList)}
+                        maxNumber={5}
+                        dataURLKey="data_url"
+                      >
+                        {({
+                          imageList,
+                          onImageUpload,
+                          onImageRemove,
+                          dragProps,
+                        }) => (
+                          <div>
+                            <div className={classes.images}>
+                              {imageList.map((image, index) => (
+                                <div
+                                  key={index}
+                                  className="image-item"
+                                  style={{ position: "relative" }}
+                                >
+                                  <img
+                                    src={image["data_url"]}
+                                    alt=""
+                                    width="150"
+                                  />
+                                  <DeleteForeverIcon
+                                    className={classes.deleteIcon}
+                                    onClick={() => onImageRemove(index)}
+                                    fontSize="medium"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                            <Gap.XS />
+                            <Button
+                              {...dragProps}
+                              variant="contained"
+                              color="default"
+                              size="small"
+                              startIcon={<CloudUploadIcon />}
+                              onClick={onImageUpload}
+                            >
+                              Upload
+                            </Button>
+                          </div>
+                        )}
+                      </ImageUploading>
                       <Grid
                         style={{ paddingTop: "10px" }}
                         container
@@ -622,14 +580,6 @@ const Component = (props: Props): JSX.Element => {
                           </BaseButton>
                         </Grid>
                       </Grid>
-                      {/* <Grid
-                        style={{ paddingTop: "10px" }}
-                        container
-                        spacing={1}
-                      >
-                        <Grid className={""} item xs={4}></Grid>
-                        <Grid className={""} item xs={4}></Grid>
-                      </Grid> */}
                     </div>
                   </div>
                 </div>
@@ -651,5 +601,7 @@ const mapDispatch = (rootReducer: any) => ({
   appReducer: rootReducer.appModel,
   authReducer: rootReducer.authModel,
 });
+
 const PostEditModal = React.memo(connect(mapState, mapDispatch)(Component));
+
 export { PostEditModal };

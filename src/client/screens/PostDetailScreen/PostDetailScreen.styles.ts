@@ -1,5 +1,6 @@
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { systemColor } from "@helpers-client/color";
+
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     textTime: {
@@ -76,6 +77,9 @@ export const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
+    },
+    icon: {
+      cursor: "pointer",
     },
   }),
 );

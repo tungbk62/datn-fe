@@ -3,18 +3,9 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      height: "100vh",
-      // width: "100vw",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      // backgroundColor: "#E5E5E5",
-    },
-    containerGird: {
-      padding: "0 5%",
-    },
-    box: {
-      height: "100%",
+      backgroundColor: "white",
+      padding: 25,
+      borderRadius: 10,
     },
     registerFormContainer: {
       backgroundColor: "#ffffff",
@@ -32,7 +23,6 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     formRegisterInput: {
       width: "100%",
-
       "& input": {
         fontSize: "14px",
         marginLeft: "10px",
@@ -101,8 +91,6 @@ export const useStyles = makeStyles((theme: Theme) =>
       padding: "8px 8px 8px 0px",
       justifyContent: "center",
       backgroundColor: "#fff",
-      // height: "32px",
-      // margin: "16px",
       cursor: "pointer",
       "& >img": {
         width: "fit-content",
@@ -124,6 +112,14 @@ export const useStyles = makeStyles((theme: Theme) =>
       color: "#ff7961",
       fontSize: 15,
       textDecoration: "underline",
+    },
+    avatar: {
+      width: theme.spacing(10),
+      height: theme.spacing(10),
+      marginBottom: 10,
+    },
+    uploadButton: {
+      marginBottom: 5,
     },
   }),
 );

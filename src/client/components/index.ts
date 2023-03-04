@@ -13,3 +13,5 @@ export * from "./BaseLazySkeletonImage";
 export * from "./BaseTextBoxSlice";
 export * from "./BaseTooltip";
 export * from "./LazyLoadingImage";
+export * from "./InfoForm";
+export * from "./Gap";

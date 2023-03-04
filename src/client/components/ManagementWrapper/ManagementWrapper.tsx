@@ -14,8 +14,6 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 import { useStyles } from "./ManagementWrapper.styles";
 import { connect } from "react-redux";
 import PersonIcon from "@material-ui/icons/Person";
@@ -27,6 +25,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import { useRouter } from "next/router";
+
 interface Props {
   children?: any;
   appState?: any;
@@ -37,8 +36,7 @@ interface Props {
 }
 
 const ManagementWrapperComponent = (props: Props) => {
-  const { children, appState, appReducer, title, authReducer, authState } =
-    props;
+  const { children, title, authReducer, authState } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -82,14 +80,14 @@ const ManagementWrapperComponent = (props: Props) => {
       case 0:
         {
           console.log(index);
-          router.push("/admin/user-management")
+          router.push("/admin/user-management");
         }
         return;
 
       case 1:
         {
           console.log(index);
-          router.push("/admin/post-management")
+          router.push("/admin/post-management");
         }
         return;
       case 2:
@@ -108,17 +106,14 @@ const ManagementWrapperComponent = (props: Props) => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    // handleMobileMenuClose();
   };
 
-  // const handleMobileMenuClose = () => {
-  //   setMobileMoreAnchorEl(null);
-  // };
   const onPressLogout = async () => {
     handleMenuClose();
     router.push("/");
     await authReducer.logout();
   };
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -197,7 +192,7 @@ const ManagementWrapperComponent = (props: Props) => {
           </IconButton>
         </div>
         <Divider />
-        
+
         <List>
           {["Người dùng", "Bài Viết", "Liên hệ", "Báo cáo"].map(
             (text, index) => (

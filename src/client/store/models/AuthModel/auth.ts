@@ -1,14 +1,13 @@
-import { IEmployeeState, IAuthState } from "./interface";
-import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import axios from "@app-client/helpers/axios";
 // import { api } from "@app-client/constants";
-import { formatDateUI, showMessage, getQueryURL } from "@app-client/helpers";
+import { showMessage } from "@app-client/helpers";
 import {
   setCommonAuthorizationToken,
   removeCommonAuthorizationToken,
 } from "@app-client/helpers";
 import { api } from "@app-client/constants";
+
 const SUCCESS_CODE = 200;
 
 export const authModel: any = {

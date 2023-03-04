@@ -1,16 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useStyles } from "./Register.styles";
-import { Grid, Paper, Button } from "@material-ui/core";
-import {
-  AutoComplete,
-  Button as ButtonAntd,
-  DatePicker,
-  Input,
-  InputNumber,
-  Row,
-  Select as SelectAntd,
-  Tooltip,
-} from "antd";
+import { Grid, Button } from "@material-ui/core";
+import { DatePicker, Input, Select as SelectAntd } from "antd";
 import { AuthWrapper } from "@components-client/AuthWrapper";
 import { Radio } from "antd";
 import { Formik } from "formik";
@@ -41,7 +32,8 @@ interface Props {
 
 const RegisterComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
-  const { children, appState, appReducer, authReducer, authState } = props;
+  const { authReducer, authState } = props;
+  console.log(authState);
   const router = useRouter();
   const registerValidationSchema = yup.object().shape({
     email: yup
@@ -101,6 +93,7 @@ const RegisterComponent = (props: Props): JSX.Element => {
       value: item.id,
       label: item.name,
     }));
+    console.log(tmp2);
     setDataAddress(tmp2);
   };
 
@@ -115,16 +108,9 @@ const RegisterComponent = (props: Props): JSX.Element => {
     getDataDistinct();
   }, [province]);
 
-  // useEffect( ()=>{
-  //   if(!dataAddress || dataAddress?.length <0){
-  //     return
-  //   }
-  //   getDataDistinct()
-
-  // },[dataAddress])
-
   const getDataDistinct = async () => {
     const data = await authReducer?.getDetailProvince(province);
+    console.log("data district", data);
     setDataDistrict(data);
   };
 
@@ -241,9 +227,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                 allowClear
                                 className={errors.email ? "inputBorderRed" : ""}
                                 placeholder="Nhập họ"
-                                // prefix={
-                                //   <UserOutlined className="site-form-item-icon" />
-                                // }
                                 maxLength={50}
                                 name="lastName"
                                 onChange={value => {
@@ -253,7 +236,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                   );
                                 }}
                                 value={values.lastName}
-                                // onChange={handleChange}
                                 onBlur={handleBlur}
                               />
                               {touched.lastName && errors.lastName ? (
@@ -267,13 +249,9 @@ const RegisterComponent = (props: Props): JSX.Element => {
                                 allowClear
                                 className={errors.email ? "inputBorderRed" : ""}
                                 placeholder="Nhập tên"
-                                // prefix={
-                                //   <UserOutlined className="site-form-item-icon" />
-                                // }
                                 maxLength={50}
                                 name="firstName"
                                 value={values.firstName}
-                                // onChange={handleChange}
                                 onChange={value => {
                                   setFieldValue(
                                     "firstName",
@@ -294,7 +272,6 @@ const RegisterComponent = (props: Props): JSX.Element => {
                               ) : null}
                             </Grid>
                           </Grid>
-
                           <Grid
                             style={{ paddingTop: "10px" }}
                             container
@@ -419,7 +396,8 @@ const RegisterComponent = (props: Props): JSX.Element => {
                             <Link href="/login">
                               <a>
                                 <span className={classes.registerText}>
-                                  {" "}đăng nhập
+                                  {" "}
+                                  đăng nhập
                                 </span>
                               </a>
                             </Link>
@@ -466,4 +444,5 @@ const mapDispatch = (rootReducer: any) => ({
 });
 
 const Register = React.memo(connect(mapState, mapDispatch)(RegisterComponent));
+
 export { Register };
