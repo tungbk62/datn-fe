@@ -24,38 +24,32 @@
     "target": "esnext",
     "baseUrl": ".",
     "paths": {
-      "@app-client/*": [
-        "./src/client/*"
+      "@src/*": [
+        "./src/*"
       ],
-      "@store-client/*": [
-        "./src/client/store/*"
+      "@store/*": [
+        "./src/store/*"
       ],
-      "@components-client/*": [
-        "./src/client/components/*"
+      "@components/*": [
+        "src/components/*"
       ],
-      "@configs-client/*": [
-        "./src/client/configs/*"
+      "@configs/*": [
+        "./src/configs/*"
       ],
-      "@constants-client/*": [
-        "./src/client/constants/*"
+      "@constants/*": [
+        "./src/constants/*"
       ],
-      "@helpers-client/*": [
-        "./src/client/helpers/*"
+      "@helpers/*": [
+        "./src/helpers/*"
       ],
-      "@hooks-client/*": [
-        "./src/client/hooks/*"
+      "@hooks/*": [
+        "./src/hooks/*"
       ],
-      "@screens-client/*": [
-        "./src/client/screens/*"
+      "@screens/*": [
+        "./src/screens/*"
       ],
-      "@styles-client/*": [
-        "./src/client/styles/*"
-      ],
-      "@server/*": [
-        "./src/server/*"
-      ],
-      "@models/*": [
-        "./src/server/models/*"
+      "@styles/*": [
+        "./src/styles/*"
       ]
     },
     "incremental": true
@@ -65,6 +59,7 @@
   ],
   "include": [
     "**/*.ts",
-    "**/*.tsx"
-, "src/utils/data-source", "src/server/middlewares/authJwt.js", "src/server/middlewares/verifySignUp.js", "src/server/server.js", "src/server/models/user.model.js", "src/server/models/role.model.js", "src/server/models/index.js"  ]
+    "**/*.tsx",
+    "src/utils/data-source"
+  ]
 }

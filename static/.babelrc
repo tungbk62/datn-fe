@@ -10,15 +10,15 @@
                     "./src"
                 ],
                 "alias": {
-                    "@app-client": "./src/client",
-                    "@store-client": "./src/client/store",
-                    "@components-client": "./src/client/components",
-                    "@configs-client": "./src/client/configs",
-                    "@constants-client": "./src/client/constants",
-                    "@helpers-client": "./src/client/helpers",
-                    "@hooks-client": "./src/client/hooks",
-                    "@screens-client": "./src/client/screens",
-                    "@styles-client": "./src/client/styles"
+                    "@src": "./src/client",
+                    "@store": "./src/client/store",
+                    "@components": "./src/client/components",
+                    "@configs": "./src/client/configs",
+                    "@constants": "./src/client/constants",
+                    "@helpers": "./src/client/helpers",
+                    "@hooks": "./src/client/hooks",
+                    "@screens": "./src/client/screens",
+                    "@styles": "./src/client/styles"
                 }
             }
         ],

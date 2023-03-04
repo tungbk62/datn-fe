@@ -1,13 +1,11 @@
-import React, {Fragment} from 'react';
-import {ForgotPassword} from "@screens-client/ForgotPassword"
-const  GetNewPasswordScreen = (): JSX.Element => {
-
-
-return (
-  <Fragment>
-    <ForgotPassword/>
-  </Fragment>
-);
+import React, { Fragment } from "react";
+import { ForgotPassword } from "@screens/ForgotPassword";
+const GetNewPasswordScreen = (): JSX.Element => {
+  return (
+    <Fragment>
+      <ForgotPassword />
+    </Fragment>
+  );
 };
 
-export default GetNewPasswordScreen
+export default GetNewPasswordScreen;

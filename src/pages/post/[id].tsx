@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
-import { PostDetailScreen} from '@app-client/screens'
-export default PostDetailScreen
-export const getServerSideProps = async(context:any)=>{
+import { PostDetailScreen } from "@src/screens";
+export default PostDetailScreen;
+export const getServerSideProps = async (context: any) => {
   return {
-      props:{
-          router:context.query,
-      }
-  }
-}
+    props: {
+      router: context.query,
+    },
+  };
+};

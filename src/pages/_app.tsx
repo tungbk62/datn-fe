@@ -1,10 +1,10 @@
 import { AppProps } from "next/app";
 // import "../../styles/global.css";
 import * as React from "react";
-import { store } from "@app-client/store";
+import { store } from "@src/store";
 import { Provider } from "react-redux";
 import Head from "next/head";
-import { ThemeProvider,createTheme } from "@material-ui/core/styles";
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 require("../../styles/variables.less");
 
 const theme = createTheme({
@@ -24,7 +24,7 @@ const theme = createTheme({
   },
 });
 
-const CustomApp: React.FC<AppProps> = ({ Component, pageProps }:any) => {
+const CustomApp: React.FC<AppProps> = ({ Component, pageProps }: any) => {
   return (
     <Provider store={store}>
       <Head>
@@ -35,9 +35,8 @@ const CustomApp: React.FC<AppProps> = ({ Component, pageProps }:any) => {
         ></link>
       </Head>
       <ThemeProvider theme={theme}>
-      <Component {...pageProps} />
+        <Component {...pageProps} />
       </ThemeProvider>
-      
     </Provider>
   ); //...pageProps to spread all props passed thru
 };

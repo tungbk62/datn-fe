@@ -1,5 +1,5 @@
 import React from "react";
-import FeedbackManagementScreen from "@app-client/screens/FeedbackManagementScreen";
+import FeedbackManagementScreen from "@src/screens/FeedbackManagementScreen";
 
 const FeedbackManagementPage = (): JSX.Element => {
   return <FeedbackManagementScreen />;
