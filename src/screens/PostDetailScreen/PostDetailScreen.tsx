@@ -23,6 +23,7 @@ import { formatMoney } from "@src/helpers";
 import { useStyles } from "./PostDetailScreen.styles";
 import { ContactForm, FeedbackForm, ReportForm } from "./components";
 import Gap from "src/components/Gap";
+import { Post } from "../HomeScreen/components";
 
 interface Props {
   appState?: any;
@@ -34,10 +35,54 @@ interface Props {
 
 type FormType = "contact" | "report" | "feedback";
 
+interface ImageList {
+  id: number;
+  url: string;
+  mainImage: boolean;
+}
+
+interface CreatedBy {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  ratingPoint?: any;
+  imageUrl: string;
+  type: string;
+}
+
+export interface PostDetail {
+  id: number;
+  title: string;
+  description: string;
+  typeEstate: string;
+  province: string;
+  district: string;
+  wards: string;
+  addressDetail: string;
+  area: number;
+  priceMonth: number;
+  furniture: string;
+  room: number;
+  bathRoom: number;
+  expiredDate?: any;
+  longitude?: any;
+  latitude?: any;
+  verified: boolean;
+  view: number;
+  imageList: ImageList[];
+  createdBy: CreatedBy;
+  createdDate: string;
+  modifiedDate?: any;
+}
+
 const PostDetailScreenComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const { appReducer } = props;
-  const [publishPostData, setPublishPostData] = useState([]) as any;
+  const [publishPostData, setPublishPostData] = useState<PostDetail | null>(
+    null,
+  );
   const [contactFormOpened, setContactFormOpened] = useState(false);
   const [reportFormOpened, setReportFormOpened] = useState(false);
   const [feedbackFormOpened, setFeedbackFormOpened] = useState(false);
@@ -64,13 +109,13 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
   };
 
   useEffect(() => {
+    const getPublishPost = async () => {
+      const dataRes = await appReducer?.getDetailPublishPost(props.router.id);
+      console.log("datares", dataRes);
+      setPublishPostData(dataRes);
+    };
     getPublishPost();
-  }, [props.router.id]);
-
-  const getPublishPost = async () => {
-    const dataRes = await appReducer?.getDetailPublishPost(props.router.id);
-    setPublishPostData(dataRes);
-  };
+  }, [appReducer, props.router.id]);
 
   return (
     <AppWrapper>
@@ -237,7 +282,7 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
             {publishPostData?.view}
           </div>
           <div style={{ fontSize: 18 }}>
-            {ReactHtmlParser(publishPostData?.description)}
+            {ReactHtmlParser(publishPostData?.description as string)}
           </div>
         </Grid>
       </div>
@@ -260,7 +305,7 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
         open={feedbackFormOpened}
         onClose={handleFormAction("feedback", false)}
       >
-        <FeedbackForm />
+        <FeedbackForm userId={publishPostData?.createdBy.id as number} />
       </Modal>
     </AppWrapper>
   );

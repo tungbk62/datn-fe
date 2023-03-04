@@ -1,9 +1,13 @@
-import React, { CSSProperties, useState } from "react";
-import { Avatar, Button, Grid, TextField } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Avatar, Button, Grid } from "@material-ui/core";
+import StarIcon from "@material-ui/icons/Star";
 import Rating from "@material-ui/lab/Rating";
 import TextArea from "antd/lib/input/TextArea";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Gap from "src/components/Gap";
+import { Feedback } from "@src/store/models/auth/interface";
+import { apiHelper } from "@src/helpers";
+import { api } from "@src/constants";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const FeedbackItem = () => {
+const FeedbackItem = (feedback: Feedback) => {
   const classes = useStyles();
 
   return (
@@ -56,22 +60,24 @@ const FeedbackItem = () => {
         </Grid>
         <Grid justifyContent="flex-start" item xs zeroMinWidth>
           <div className={classes.horizontal}>
-            <h4 style={{ margin: 0, textAlign: "left" }}>Michel Michel</h4>
+            <h4 style={{ margin: 0, textAlign: "left" }}>
+              {feedback.createdBy.lastName} {feedback.createdBy.firstName}
+            </h4>
             <Gap.XS />
-            <span>4</span>
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              {feedback.ratingPoint}{" "}
+              <StarIcon fontSize="small" style={{ color: "orange" }} />
+            </span>
           </div>
-          <p style={{ textAlign: "left" }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-            luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
-            Suspendisse congue vulputate lobortis. Pellentesque at interdum
-            tortor. Quisque arcu quam, malesuada vel mauris et, posuere sagittis
-            ipsum. Aliquam ultricies a ligula nec faucibus. In elit metus,
-            efficitur lobortis nisi quis, molestie porttitor metus. Pellentesque
-            et neque risus. Aliquam vulputate, mauris vitae tincidunt interdum,
-            mauris mi vehicula urna, nec feugiat quam lectus vitae ex.{" "}
-          </p>
+          <p style={{ textAlign: "left" }}>{feedback.description}</p>
           <p style={{ textAlign: "left", color: "gray" }}>
-            posted 1 minute ago
+            {feedback.createdDate}
           </p>
         </Grid>
       </Grid>
@@ -79,9 +85,25 @@ const FeedbackItem = () => {
   );
 };
 
-const FeedbackForm: React.FC = () => {
+type Props = {
+  userId: number;
+};
+
+const FeedbackForm: React.FC<Props> = props => {
   const classes = useStyles();
   const [value, setValue] = useState(2);
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+
+  useEffect(() => {
+    const getFeedbacks = async () => {
+      const res = await apiHelper.get<Feedback[]>(
+        api.listFeedback(props.userId),
+        { page: 0, size: 999 },
+      );
+      setFeedbacks(res);
+    };
+    void getFeedbacks();
+  }, [props.userId]);
 
   return (
     <div className={classes.container}>
@@ -100,13 +122,9 @@ const FeedbackForm: React.FC = () => {
         </Button>
         <Gap.XS />
         <div className={classes.commentSection}>
-          <FeedbackItem />
-          <FeedbackItem />
-          <FeedbackItem />
-          <FeedbackItem />
-          <FeedbackItem />
-          <FeedbackItem />
-          <FeedbackItem />
+          {feedbacks.map(feedback => (
+            <FeedbackItem key={feedback.id} {...feedback} />
+          ))}
         </div>
       </form>
     </div>

@@ -30,10 +30,11 @@ import { apiHelper } from "@src/helpers";
 import { api } from "@src/constants";
 import { District, TypeEstate, Ward } from "@src/store/models/app/interface";
 import PriceSlider from "./PriceSlider";
+import Notifications from "../Notifications";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
-type FormType = "edit-post" | "edit-profile";
+type FormType = "edit-post" | "edit-profile" | "notifications";
 
 const mapState = (rootState: RootState) => ({
   appState: rootState.appModel,
@@ -67,7 +68,8 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     right: false,
   });
   const [infoFormOpened, setInfoFormOpened] = useState(false);
-  const [postFormOpened, setPostFormOpened] = useState(false) as any;
+  const [postFormOpened, setPostFormOpened] = useState(false);
+  const [notiOpened, setNotiFormOpened] = useState(false);
 
   useEffect(() => {
     const getSystemsData = async () => {
@@ -81,11 +83,20 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
 
   const handleFormAction = (formType: FormType, open = true) => {
     return () => {
-      if (formType === "edit-post") {
-        setPostFormOpened(open);
-        return;
+      switch (formType) {
+        case "edit-post": {
+          setPostFormOpened(open);
+          return;
+        }
+        case "edit-profile": {
+          setInfoFormOpened(open);
+          return;
+        }
+        case "notifications": {
+          setNotiFormOpened(open);
+          return;
+        }
       }
-      setInfoFormOpened(open);
     };
   };
 
@@ -437,8 +448,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
                     Đăng tin
                   </BaseButton>
                 )}
-                <IconButton color="inherit" aria-label="noti">
-                  {appState?.notiAction && appState?.notiAction > 0 ? (
+                <IconButton
+                  color="inherit"
+                  aria-label="noti"
+                  onClick={handleFormAction("notifications", true)}
+                >
+                  {appState?.notiAction && appState.notiAction > 0 ? (
                     <Badge variant="dot" color="secondary">
                       <NotificationsIcon />
                     </Badge>
@@ -510,6 +525,13 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         onClose={handleFormAction("edit-profile", false)}
       >
         <InfoForm provinces={[]} onSubmit={console.log} />
+      </Modal>
+      <Modal
+        className={classes.center}
+        open={notiOpened}
+        onClose={handleFormAction("edit-profile", false)}
+      >
+        <Notifications userId={authState.userInfo?.id as number} />
       </Modal>
     </>
   );

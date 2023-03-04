@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -7,11 +7,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableHead from "@material-ui/core/TableHead";
 import IconButton from "@material-ui/core/IconButton";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import LockIcon from "@material-ui/icons/Lock";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
-import CheckBoxOutlinedIcon from "@material-ui/icons/CheckBoxOutlined";
-import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutlineBlankOutlined";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 
 import { UserDetailModal } from "src/components/UserDetailModal";
 import { ManagementWrapper } from "src/components/ManagementWrapper";
@@ -21,9 +17,11 @@ import { api } from "@src/constants";
 import { connect } from "react-redux";
 import { Dispatch, RootState } from "@src/store";
 import { Report } from "@src/store/models/auth/interface";
+import { Input } from "@material-ui/core";
+import { debounce } from "lodash";
 
 interface Column {
-  id: "phoneNumber" | "email" | "type" | "create-at" | "";
+  id: "phoneNumber" | "email" | "message" | "type" | "create-at" | "";
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -34,6 +32,7 @@ interface Column {
 const columns: Column[] = [
   { id: "phoneNumber", label: "Số điện thoại", maxWidth: 80 },
   { id: "email", label: "Email" },
+  { id: "message", label: "Lời nhắn" },
   { id: "type", label: "Loại báo cáo", maxWidth: 30 },
   { id: "create-at", label: "Ngày tạo", maxWidth: 30 },
   { id: "", label: "Thao tác", maxWidth: 50, align: "right" },
@@ -53,7 +52,7 @@ type StateProps = ReturnType<typeof mapState>;
 type DispatchProps = ReturnType<typeof mapDispatch>;
 type Props = StateProps & DispatchProps;
 
-const ReportManagementScreenComponent = (props: Props): JSX.Element => {
+const ReportManagementScreenComponent = (_: Props): JSX.Element => {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -74,11 +73,12 @@ const ReportManagementScreenComponent = (props: Props): JSX.Element => {
     setPage(0);
   };
 
-  useEffect(() => {
-    const getReports = async () => {
+  const getReports = useCallback(
+    async (postId?: number | string) => {
       const params = {
         page: page,
         size: rowsPerPage,
+        postId,
       };
       try {
         const res = await apiHelper.get<Report[]>(api.listReport, params);
@@ -87,59 +87,19 @@ const ReportManagementScreenComponent = (props: Props): JSX.Element => {
       } catch {
         setReports([]);
       }
-    };
+    },
+    [page, rowsPerPage],
+  );
+
+  useEffect(() => {
     getReports();
-  }, [page, rowsPerPage]);
+  }, [getReports, page, rowsPerPage]);
 
-  const handleModalOpen = async (type?: string) => {
-    switch (type) {
-      case "view":
-        return;
-      case "review":
-        return;
-      case "lock":
-        return;
-      default:
-        break;
-    }
-  };
-
-  const renderFunctionIcon = (item: any) => {
+  const renderFunctionIcon = () => {
     return (
       <div>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => {
-            handleModalOpen("review", item);
-          }}
-          edge="start"
-        >
-          {item?.displayReview ? (
-            <CheckBoxOutlinedIcon />
-          ) : (
-            <CheckBoxOutlineBlankOutlinedIcon />
-          )}
-        </IconButton>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => {
-            handleModalOpen("lock", item);
-          }}
-          edge="start"
-        >
-          {item?.locked ? <LockIcon /> : <LockOpenIcon />}
-        </IconButton>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => {
-            handleModalOpen("view", item);
-          }}
-          edge="start"
-        >
-          <VisibilityIcon />
+        <IconButton color="inherit" aria-label="open drawer" edge="start">
+          <DeleteForeverIcon />
         </IconButton>
       </div>
     );
@@ -152,7 +112,14 @@ const ReportManagementScreenComponent = (props: Props): JSX.Element => {
   };
 
   return (
-    <ManagementWrapper title={"Bao cao"}>
+    <ManagementWrapper title={"Báo cáo bài đăng"}>
+      <Input
+        placeholder="Nhập ID bài viết cần duyệt báo cáo"
+        style={{ width: 350 }}
+        onChange={debounce(e => {
+          getReports(e.target.value);
+        }, 500)}
+      />
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -174,16 +141,15 @@ const ReportManagementScreenComponent = (props: Props): JSX.Element => {
           <TableBody>
             {reports
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map(row => {
+              .map(report => {
                 return (
-                  <TableRow key={row.id}>
-                    <TableCell component="th">{row.phoneReport}</TableCell>
-                    <TableCell align="left">{row.emailReport}</TableCell>
-                    <TableCell align="left">{row.typeReportName}</TableCell>
-                    <TableCell align="left">{row.createdDate}</TableCell>
-                    <TableCell align="right">
-                      {renderFunctionIcon(row)}
-                    </TableCell>
+                  <TableRow key={report.id}>
+                    <TableCell component="th">{report.phoneReport}</TableCell>
+                    <TableCell align="left">{report.emailReport}</TableCell>
+                    <TableCell align="left">{report.description}</TableCell>
+                    <TableCell align="left">{report.typeReportName}</TableCell>
+                    <TableCell align="left">{report.createdDate}</TableCell>
+                    <TableCell align="right">{renderFunctionIcon()}</TableCell>
                   </TableRow>
                 );
               })}
