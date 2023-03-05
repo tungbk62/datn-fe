@@ -47,8 +47,8 @@ const SuggestHousingCpn = (props: Props): JSX.Element => {
 
   return (
     <div className={classes.categoryContainer}>
-      <TitleText title={"Kết quả tìm kiếm"} />
-      {/* <TitleText title={"Dự án cho bạn"} /> */}
+      {/* <TitleText title={"Kết quả tìm kiếm"} /> */}
+      <TitleText title={"Dự án cho bạn"} />
       <div className={classes.swiperCategory}>
         <Grid
           style={{ paddingTop: "10px", paddingBottom: "10px" }}
