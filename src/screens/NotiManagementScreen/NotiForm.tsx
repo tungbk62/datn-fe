@@ -4,6 +4,7 @@ import { api } from "@src/constants";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { Select, Input, SelectProps } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import Gap from "@src/components/Gap";
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,7 +48,14 @@ const SendNotiForm: React.FC = () => {
           options={options}
           // className={classes.input}
         />
-        {/* <Select placeholder="Loai thong bao" /> */}
+        <Gap.XS />
+        <Select
+          placeholder="Loại thông báo"
+          options={[
+            { label: "Thông báo", value: 1 },
+            { label: "Cảnh báo", value: 1 },
+          ]}
+        />
         <TextArea placeholder="Nội dung" className={classes.input} />
       </div>
     </div>
