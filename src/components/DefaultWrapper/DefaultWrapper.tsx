@@ -24,7 +24,7 @@ import { BaseButton } from "../BaseButton";
 import { PostEditModal } from "../PostEditModal";
 import { Footer } from "./Footer";
 import Gap from "../Gap";
-import InfoForm from "../InfoForm";
+import InfoForm, { ChangePWForm } from "../InfoForm";
 import { Dispatch, RootState } from "@src/store";
 import { apiHelper } from "@src/helpers";
 import { api } from "@src/constants";
@@ -34,7 +34,7 @@ import Notifications from "../Notifications";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
-type FormType = "edit-post" | "edit-profile" | "notifications";
+type FormType = "edit-post" | "edit-profile" | "change-pw" | "notifications";
 
 const mapState = (rootState: RootState) => ({
   appState: rootState.appModel,
@@ -70,6 +70,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const [infoFormOpened, setInfoFormOpened] = useState(false);
   const [postFormOpened, setPostFormOpened] = useState(false);
   const [notiOpened, setNotiFormOpened] = useState(false);
+  const [changePwFormOpened, setChangePwFormOpened] = useState(false);
 
   useEffect(() => {
     const getSystemsData = async () => {
@@ -96,6 +97,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
           setNotiFormOpened(open);
           return;
         }
+        case "change-pw": {
+          setChangePwFormOpened(open);
+          return;
+        }
       }
     };
   };
@@ -114,7 +119,6 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
-    handleFormAction("edit-profile")();
   };
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -234,7 +238,22 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       {authState?.userInfo?.type === "BUSINESS" && (
         <MenuItem onClick={onPressToBusinessPage}>Bài đăng của tôi</MenuItem>
       )}
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          handleFormAction("edit-profile")();
+        }}
+      >
+        Profile
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          handleFormAction("change-pw", true)();
+        }}
+      >
+        Đổi mật khẩu
+      </MenuItem>
       <MenuItem onClick={onPressLogout}>Đăng xuất</MenuItem>
     </Menu>
   );
@@ -528,8 +547,15 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       </Modal>
       <Modal
         className={classes.center}
+        open={changePwFormOpened}
+        onClose={handleFormAction("change-pw", false)}
+      >
+        <ChangePWForm />
+      </Modal>
+      <Modal
+        className={classes.center}
         open={notiOpened}
-        onClose={handleFormAction("edit-profile", false)}
+        onClose={handleFormAction("notifications", false)}
       >
         <Notifications userId={authState.userInfo?.id as number} />
       </Modal>

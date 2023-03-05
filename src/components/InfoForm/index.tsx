@@ -281,4 +281,121 @@ const InfoForm: React.FC<Props> = props => {
   );
 };
 
+export const ChangePWForm: React.FC = props => {
+  const classes = useStyles();
+
+  return (
+    <Formik
+      validateOnChange={false}
+      validationSchema={registerValidationSchema}
+      initialValues={{
+        email: "",
+        password: "",
+        firstName: "",
+        lastName: "",
+        birthDay: "",
+        phone: "",
+        type: "",
+        wardsId: "",
+      }}
+      onSubmit={props.onSubmit}
+      validateOnBlur
+    >
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        touched,
+        errors,
+        setFieldValue,
+      }) => {
+        return (
+          <div className={classes.container}>
+            <div className={classes.formRegisterItem}>
+              <div className={classes.formRegisterInput}>
+                <Input.Password
+                  allowClear
+                  className={errors.password ? "inputBorderRed" : ""}
+                  placeholder="Nhập mật khẩu cũ"
+                  prefix={<SafetyOutlined className="site-form-item-icon" />}
+                  style={{ marginTop: "10px" }}
+                  iconRender={visible =>
+                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                  }
+                  maxLength={50}
+                  name="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onKeyPress={(e: any) => {
+                    if (e.key === "Enter") {
+                      handleSubmit();
+                    }
+                  }}
+                />
+                <Input.Password
+                  allowClear
+                  className={errors.password ? "inputBorderRed" : ""}
+                  placeholder="Nhập mật khẩu mới"
+                  prefix={<SafetyOutlined className="site-form-item-icon" />}
+                  style={{ marginTop: "10px" }}
+                  iconRender={visible =>
+                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                  }
+                  maxLength={50}
+                  name="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onKeyPress={(e: any) => {
+                    if (e.key === "Enter") {
+                      handleSubmit();
+                    }
+                  }}
+                />
+                <Input.Password
+                  allowClear
+                  className={errors.password ? "inputBorderRed" : ""}
+                  placeholder="Nhập lại mật khẩu mới"
+                  prefix={<SafetyOutlined className="site-form-item-icon" />}
+                  style={{ marginTop: "10px" }}
+                  iconRender={visible =>
+                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                  }
+                  maxLength={50}
+                  name="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onKeyPress={(e: any) => {
+                    if (e.key === "Enter") {
+                      handleSubmit();
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div className={classes.formRegisterButton}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.registerBtn}
+                onClick={() => handleSubmit()}
+                onKeyPress={e => {
+                  if (e.key === "Enter") {
+                    handleSubmit();
+                  }
+                }}
+              >
+                cập nhật
+              </Button>
+            </div>
+          </div>
+        );
+      }}
+    </Formik>
+  );
+};
+
 export default InfoForm;
