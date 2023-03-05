@@ -72,26 +72,24 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
     Math.min(rowsPerPage, publishPostData.length - page * rowsPerPage);
 
   useEffect(() => {
+    const getMyPost = async () => {
+      const params = {
+        page: page,
+        size: rowsPerPage,
+      };
+      const tmp = await appReducer?.getMyPost(params);
+      if (tmp) {
+        setPublishPostData(tmp);
+      }
+    };
+    const getUserData = async () => {
+      const dataRes = await authReducer?.getUserDetail();
+      console.log(dataRes);
+      setUserData(dataRes);
+    };
     getUserData();
     getMyPost();
-  }, [props.router.id]);
-
-  const getUserData = async () => {
-    const dataRes = await authReducer?.getDetailUser();
-    console.log(dataRes);
-    setUserData(dataRes);
-  };
-
-  const getMyPost = async () => {
-    const params = {
-      page: page,
-      size: rowsPerPage,
-    };
-    const tmp = await appReducer?.getMyPost(params);
-    if (tmp) {
-      setPublishPostData(tmp);
-    }
-  };
+  }, [appReducer, authReducer, page, props.router.id, rowsPerPage]);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -225,7 +223,7 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
                 <div className={classes.textBox}>
                   <div className={classes.textStyle}>Địa chỉ:</div>
                   <div className={classes.textStyle}>
-                    {`${userData?.province}, ${userData?.wards}`}
+                    {`${userData?.province}`}
                   </div>
                 </div>
               </div>
