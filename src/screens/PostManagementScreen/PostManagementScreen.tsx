@@ -180,7 +180,7 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
   };
 
   return (
-    <ManagementWrapper title={"Quản lý người dùng"}>
+    <ManagementWrapper title={"Quản lý bài viết"}>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>

@@ -147,6 +147,16 @@ const LoginScreenComponent = (props: Props): JSX.Element => {
                           </a>
                         </Link>
                       </div>
+                      <div className={classes.dontHaveAccountContainer}>
+                        <Link href="/forget-password">
+                          <a>
+                            <span className={classes.registerText}>
+                              {" "}
+                              quên mật khẩu
+                            </span>
+                          </a>
+                        </Link>
+                      </div>
                       <div className={classes.formLoginItem}>
                         <div className={classes.formLoginButton}>
                           <Button

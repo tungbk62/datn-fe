@@ -19,6 +19,7 @@ import { connect } from "react-redux";
 import PersonIcon from "@material-ui/icons/Person";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import ContactsIcon from "@material-ui/icons/Contacts";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 import ReportIcon from "@material-ui/icons/Report";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -48,6 +49,7 @@ type Props = StateProps &
 
 const ManagementWrapperComponent = (props: Props) => {
   const { children, title, authReducer, authState } = props;
+  const role = authState.userInfo?.type;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -56,9 +58,12 @@ const ManagementWrapperComponent = (props: Props) => {
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  const tabs = ["Người dùng", "Bài Viết", "Báo cáo", "Đánh giá"];
-  if (authState.userInfo?.type === "BUSINESS") {
+
+  const tabs = ["Người dùng", "Bài viết", "Báo cáo", "Đánh giá"];
+  if (role === "BUSINESS") {
     tabs.push("Liên hệ");
+  } else if (role === "ADMIN") {
+    tabs.push("Thông báo");
   }
 
   const handleDrawerClose = () => {
@@ -83,7 +88,7 @@ const ManagementWrapperComponent = (props: Props) => {
       case 3:
         return <FeedbackIcon />;
       case 4:
-        return <ContactsIcon />;
+        return role === "BUSINESS" ? <ContactsIcon /> : <NotificationsIcon />;
     }
   };
 

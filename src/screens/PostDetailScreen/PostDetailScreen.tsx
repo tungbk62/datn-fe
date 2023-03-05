@@ -12,6 +12,9 @@ import ScheduleIcon from "@material-ui/icons/Schedule";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import PersonIcon from "@material-ui/icons/Person";
+import PhoneIcon from "@material-ui/icons/Phone";
+import StarIcon from "@material-ui/icons/Star";
 import EmailIcon from "@material-ui/icons/Email";
 import moment from "moment";
 import { Button, Grid, Modal } from "@material-ui/core";
@@ -219,7 +222,10 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
                 </Grid>
                 <Grid className={""} item xs={6}>
                   <div className={classes.containerText}>
-                    <div>SDT:</div>
+                    <div className={classes.row}>
+                      <PhoneIcon style={{ marginRight: 3 }} />
+                      SĐT:
+                    </div>
                     <div>{publishPostData?.createdBy?.phone}</div>
                   </div>
                 </Grid>
@@ -230,7 +236,10 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
                     style={{ marginBottom: 7 }}
                     className={classes.containerText}
                   >
-                    <div>Được đăng bởi :</div>
+                    <div className={classes.row}>
+                      <PersonIcon style={{ marginRight: 3 }} />
+                      Được đăng bởi :
+                    </div>
                     <div>
                       {publishPostData?.createdBy?.firstName}{" "}
                       {publishPostData?.createdBy?.lastName}
@@ -259,8 +268,13 @@ const PostDetailScreenComponent = (props: Props): JSX.Element => {
                 <Grid className={""} item xs={6}>
                   {publishPostData?.createdBy?.ratingPoint && (
                     <div className={classes.containerText}>
-                      <div>Điểm đánh giá:</div>
-                      <div>{publishPostData?.createdBy?.ratingPoint}</div>
+                      <div className={classes.row}>
+                        <StarIcon style={{ marginRight: 3 }} />
+                        Điểm đánh giá:
+                      </div>
+                      <div>
+                        {Math.floor(publishPostData?.createdBy?.ratingPoint)}/5
+                      </div>
                     </div>
                   )}
                 </Grid>

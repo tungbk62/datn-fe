@@ -132,31 +132,6 @@ const InfoForm: React.FC<Props> = props => {
                 {touched.email && errors.email ? (
                   <div className={classes.errorMess}>{errors.email}</div>
                 ) : null}
-
-                <Input.Password
-                  allowClear
-                  className={errors.password ? "inputBorderRed" : ""}
-                  placeholder="Enter your password"
-                  prefix={<SafetyOutlined className="site-form-item-icon" />}
-                  style={{ marginTop: "10px" }}
-                  iconRender={visible =>
-                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                  }
-                  maxLength={50}
-                  name="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onKeyPress={(e: any) => {
-                    if (e.key === "Enter") {
-                      handleSubmit();
-                    }
-                  }}
-                />
-                {touched.password && errors.password ? (
-                  <div className={classes.errorMess}>{errors.password}</div>
-                ) : null}
-
                 <Grid style={{ paddingTop: "10px" }} container spacing={1}>
                   <Grid className={""} item xs={6}>
                     <Input
@@ -296,7 +271,7 @@ const InfoForm: React.FC<Props> = props => {
                   }
                 }}
               >
-                Cap nhat
+                cập nhật
               </Button>
             </div>
           </div>
