@@ -31,10 +31,13 @@ const Notifications: React.FC<Props> = () => {
   useEffect(() => {
     const getNotifications = async () => {
       try {
-        const data = await apiHelper.get<NotiDetail[]>(`${api.notifications}`, {
-          page: 0,
-          size: 999,
-        });
+        const data = await apiHelper.get<NotiDetail[]>(
+          `${api.businessNotifications}`,
+          {
+            page: 0,
+            size: 999,
+          },
+        );
         setNotifications(data);
       } catch {
         setNotifications([]);

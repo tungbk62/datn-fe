@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useStyles } from "./UserManagementScreen.styles";
 import { ManagementWrapper } from "src/components/ManagementWrapper";
 
@@ -23,6 +23,8 @@ import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
 import CheckBoxOutlinedIcon from "@material-ui/icons/CheckBoxOutlined";
 import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutlineBlankOutlined";
 import { UserDetailModal } from "src/components/UserDetailModal";
+import { Input } from "@material-ui/core";
+import { debounce } from "lodash";
 
 interface Column {
   id: "id" | "name" | "email" | "type" | "imageUrl" | "";
@@ -100,21 +102,24 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
     setPage(0);
   };
 
+  const getListUser = useCallback(
+    async (query?: string) => {
+      const params = {
+        page: page,
+        size: rowsPerPage,
+        query,
+      };
+      const tmp = await appReducer.getListUser(params);
+      if (tmp) {
+        setRows(tmp);
+      }
+    },
+    [appReducer, page, rowsPerPage],
+  );
+
   useEffect(() => {
     getListUser();
-    // setRows(appState?.listUserBusiness)
-  }, [page]);
-
-  const getListUser = async () => {
-    const params = {
-      page: page,
-      size: rowsPerPage,
-    };
-    const tmp = await appReducer.getListUser(params);
-    if (tmp) {
-      setRows(tmp);
-    }
-  };
+  }, [getListUser]);
 
   const handleModalOpen = async (type?: string, item?: any) => {
     switch (type) {
@@ -149,7 +154,7 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
     }
   };
 
-  const renderFuncionIcon = (item: any) => {
+  const renderFunctionIcon = (item: any) => {
     return (
       <div>
         <IconButton
@@ -204,13 +209,13 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
 
   return (
     <ManagementWrapper title={"Quản lý người dùng"}>
-      {/* <div
-        style={{
-          height: 160,
-          width: "100%",
-          backgroundColor: "#E5E5E5",
-        }}
-      ></div> */}
+      <Input
+        placeholder="Nhập query bài viết cần duyệt báo cáo"
+        style={{ width: 350 }}
+        onChange={debounce(e => {
+          getListUser(e.target.value);
+        }, 500)}
+      />
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -243,7 +248,7 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
                     <TableCell align="left">{row.name}</TableCell>
                     <TableCell align="left">{row.email}</TableCell>
                     <TableCell align="right">
-                      {renderFuncionIcon(row)}
+                      {renderFunctionIcon(row)}
                     </TableCell>
                   </TableRow>
                 );
@@ -286,7 +291,9 @@ const mapDispatch = (rootReducer: any) => ({
   appReducer: rootReducer.appModel,
   authReducer: rootReducer.authModel,
 });
+
 const UserManagementScreen = React.memo(
   connect(mapState, mapDispatch)(UserManagementScreenComponent),
 );
+
 export { UserManagementScreen };

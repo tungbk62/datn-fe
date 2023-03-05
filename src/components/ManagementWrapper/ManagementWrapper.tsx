@@ -113,7 +113,8 @@ const ManagementWrapperComponent = (props: Props) => {
         router.push("/admin/feedback-management");
         return;
       case 4: {
-        return <ReportIcon />;
+        router.push("/admin/noti-management");
+        return;
       }
     }
   };

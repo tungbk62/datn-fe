@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -21,6 +21,8 @@ import { api } from "@src/constants";
 import { connect } from "react-redux";
 import { Dispatch, RootState } from "@src/store";
 import { Feedback } from "@src/store/models/auth/interface";
+import { Input } from "@material-ui/core";
+import { debounce } from "lodash";
 
 interface Column {
   id: "createdBy" | "content" | "rating" | "";
@@ -65,14 +67,13 @@ type StateProps = ReturnType<typeof mapState>;
 type DispatchProps = ReturnType<typeof mapDispatch>;
 type Props = StateProps & DispatchProps;
 
-const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
+const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = useState<Feedback[]>([]);
-  const { appReducer } = props;
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, feedbacks.length - page * rowsPerPage);
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
@@ -87,24 +88,32 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
     setPage(0);
   };
 
-  useEffect(() => {
-    const getFeedbacks = async () => {
+  const getFeedbacks = useCallback(
+    async (userId?: number | string) => {
       const params = {
         page: page,
         size: rowsPerPage,
+        userId,
       };
       try {
-        const feedbacks = await apiHelper.get(api.listFeedback(6), params);
+        const feedbacks = await apiHelper.get<Feedback[]>(
+          api.listFeedback(6),
+          params,
+        );
         console.log(feedbacks);
         if (feedbacks) {
-          setRows(feedbacks);
+          setFeedbacks(feedbacks);
         }
       } catch {
-        setRows([]);
+        setFeedbacks([]);
       }
-    };
+    },
+    [page, rowsPerPage],
+  );
+
+  useEffect(() => {
     getFeedbacks();
-  }, [page, rowsPerPage]);
+  }, [getFeedbacks, page, rowsPerPage]);
 
   const handleModalOpen = async (type?: string) => {
     switch (type) {
@@ -168,6 +177,13 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
 
   return (
     <ManagementWrapper title={"Đánh giá"}>
+      <Input
+        placeholder="Nhập query bài viết cần duyệt báo cáo"
+        style={{ width: 350 }}
+        onChange={debounce(e => {
+          getFeedbacks(e.target.value);
+        }, 500)}
+      />
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -187,7 +203,7 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {feedbacks
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(row => {
                 return (
@@ -214,7 +230,7 @@ const FeedbackManagementScreenComponent = (props: Props): JSX.Element => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rows?.length * 10}
+        count={feedbacks?.length * 10}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
