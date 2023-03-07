@@ -75,7 +75,7 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, feedbacks.length - page * rowsPerPage);
   const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
+    _: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
     setPage(newPage);
@@ -115,7 +115,8 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
     getFeedbacks();
   }, [getFeedbacks, page, rowsPerPage]);
 
-  const handleModalOpen = async (type?: string) => {
+  const handleModalOpen = async (type: string, item?: any) => {
+    console.log(item)
     switch (type) {
       case "view":
         return;
@@ -170,7 +171,7 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
   };
 
   const [openModal, setOpenModal] = useState(false) as any;
-  const [dataModal, setDataModal] = useState() as any;
+  const [dataModal, setDataModal] = useState();
   const handleCloseModal = () => {
     setOpenModal(false);
   };
@@ -184,7 +185,7 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
           getFeedbacks(e.target.value);
         }, 500)}
       />
-      <TableContainer className={classes.container}>
+      <TableContainer>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>

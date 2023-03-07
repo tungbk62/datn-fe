@@ -6,6 +6,11 @@ export const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: "white",
       padding: 25,
       borderRadius: 10,
+      width: 500,
+    },
+    notiDetail: {
+      display: "flex",
+      flexDirection: "row",
     },
   }),
 );
