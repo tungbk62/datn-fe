@@ -10,7 +10,6 @@ import { BaseButton } from "../BaseButton";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { connect } from "react-redux";
-import { debounce } from "lodash";
 
 import { DollarCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
@@ -26,6 +25,7 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import Gap from "../Gap";
+import ImagePicker from "../ImagePicker/ImagePicker";
 
 interface Props {
   visible?: boolean;
@@ -35,6 +35,7 @@ interface Props {
   appReducer?: any;
   authState?: any;
   authReducer?: any;
+  data?: any;
 }
 
 const modules = {
@@ -59,9 +60,9 @@ const modules = {
 
 const Component = (props: Props): JSX.Element => {
   const classes = useStyles();
-  const { visible, hideModal, appState, appReducer, authReducer, authState } =
+  const { visible, hideModal, appState, appReducer, authReducer, authState, data } =
     props;
-  const [value, setValue] = useState("");
+  const [description, setDescription] = useState("");
 
   const registerValidationSchema = yup.object().shape({
     title: yup
@@ -113,6 +114,7 @@ const Component = (props: Props): JSX.Element => {
       label: item.name,
     }));
     setDataAddress(tmp2);
+
   };
   const handleChangeAddress2 = (
     event: React.ChangeEvent<{ value: unknown }>,
@@ -125,6 +127,7 @@ const Component = (props: Props): JSX.Element => {
   const [dataAddress, setDataAddress] = useState([]) as any;
   const [idAddress, setIdAddress] = useState([]) as any;
   const [images, setImages] = useState<ImageListType>([]);
+  const [deleteImageId, setDeleteImageId] = useState([]);
 
   useEffect(() => {
     if (!province) {
@@ -133,18 +136,61 @@ const Component = (props: Props): JSX.Element => {
     getDataDistinct();
   }, [province]);
 
+  useEffect(() => {
+    if(data){
+
+      setDescription(data?.description);
+      console.log("tao tinh");
+      setProvince(data.provinceId);
+      const tmp = authState?.detailProvince?.filter(
+        (item: any) => item.id === data.districtId,
+      );
+      const tmp2 = tmp[0]?.value.map((item: any) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      console.log("heloooo");
+      console.log(tmp2);
+      setDataAddress(tmp2);
+    }
+  }, [props.visible]);
+
   const getDataDistinct = async () => {
     const data = await authReducer?.getDetailProvince(province);
     setDataDistrict(data);
   };
 
   const onPost = async (values: any) => {
-    const res = await appReducer?.createPost(values);
-    if (res) {
-      setValue("");
-      hideModal();
+    console.log(values);
+    console.log(data);
+    console.log('delete', deleteImageId);
+    if(data){
+      values.id = data.id;
+      console.log(values);
+      const res1 = await appReducer?.updatePost(values);
+
+      let res2;
+      if(deleteImageId.length > 0){
+        res2 = await appReducer?.deleteImage(deleteImageId);
+      }else{
+        res2 = true;
+      }
+
+      if (res1 && res2) {
+        setDescription("");
+        hideModal();
+      }
+    }else{
+      const res = await appReducer?.createPost(values);
+      if (res) {
+        setDescription("");
+        hideModal();
+      }
     }
+    
   };
+
+  const buttonText = data ? "Cập nhật" : "Đăng tin"; 
 
   return (
     <BaseModal visible={visible || false} handleClose={hideModal as any}>
@@ -158,33 +204,28 @@ const Component = (props: Props): JSX.Element => {
         </Fade>
         <div className={classes.containerContent}>
           <Formik
-            validateOnChange={false}
-            validationSchema={registerValidationSchema}
             initialValues={{
-              title: "",
-              description: "",
-              typeEstateId: 2,
-              wardsId: "",
-              addressDetail: "",
-              area: "",
-              priceMonth: "",
-              furniture: "",
-              room: "",
-              bathRoom: "",
+              id: null,
+              title: null,
+              description: null,
+              typeEstateId: null,
+              wardsId: null,
+              addressDetail: null,
+              area: null,
+              priceMonth: null,
+              furniture: null,
+              room: null,
+              bathRoom: null,
               expiredDate: null,
               hide: false,
-              typePostId: "",
+              typePostId: null,
             }}
             onSubmit={onPost}
-            validateOnBlur
           >
             {({
               handleChange,
               handleBlur,
-              handleSubmit,
               values,
-              touched,
-              errors,
               setFieldValue,
             }: any) => {
               return (
@@ -199,45 +240,29 @@ const Component = (props: Props): JSX.Element => {
                         <Grid className={""} item xs={6}>
                           <Input
                             allowClear
-                            className={errors.title ? "inputBorderRed" : ""}
+                            className={"inputBorderRed"}
                             placeholder="Nhập tiêu đề"
                             prefix={
                               <FileTextOutlined className="site-form-item-icon" />
                             }
-                            maxLength={50}
+                            maxLength={200}
                             name="title"
-                            value={values.title}
+                            defaultValue={data?.title}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            onKeyPress={(e: any) => {
-                              if (e.key === "Enter") {
-                                handleSubmit();
-                              }
-                            }}
                           />
-                          {touched.title && errors.title ? (
-                            <div className={classes.errorMess}>
-                              {errors.title}
-                            </div>
-                          ) : null}
                         </Grid>
                         <Grid className={""} item xs={6}></Grid>
                       </Grid>
                       <ReactQuill
                         theme="snow"
-                        value={value}
-                        onChange={debounce(value => {
-                          console.log(value);
-                          setValue(value);
-                          setFieldValue("description", value);
-                        }, 1000)}
+                        defaultValue={description}
+                        onChange={value => {
+                          setDescription(value);
+                          setFieldValue(value)
+                        }}
                         modules={modules}
                       />
-                      {touched.description && errors.description ? (
-                        <div className={classes.errorMess}>
-                          {errors.description}
-                        </div>
-                      ) : null}
                       <Grid
                         style={{ paddingTop: "10px" }}
                         container
@@ -246,30 +271,26 @@ const Component = (props: Props): JSX.Element => {
                         <Grid className={""} item xs={4}>
                           <Input
                             allowClear
-                            className={errors.title ? "inputBorderRed" : ""}
+                            className={"inputBorderRed"}
                             placeholder="Nhập diện tích (m&sup2;)"
                             maxLength={50}
-                            // name="area"
-                            onChange={value => {
+                            name="area"
+                            onChange={event => {
+                              console.log(event.target.value)
                               setFieldValue(
                                 "area",
-                                value ? Number(value.target.value) : null,
+                                event ? Number(event.target.value) : null,
                               );
                             }}
-                            value={values.area}
+                            defaultValue={data?.area}
                             // onChange={handleChange}
                             onBlur={handleBlur}
                           />
-                          {touched.area && errors.area ? (
-                            <div className={classes.errorMess}>
-                              {errors.area}
-                            </div>
-                          ) : null}
                         </Grid>
                         <Grid className={""} item xs={4}>
                           <Input
                             allowClear
-                            className={errors.title ? "inputBorderRed" : ""}
+                            className={"inputBorderRed"}
                             placeholder="Nhập số phòng"
                             maxLength={50}
                             // name="room"
@@ -279,38 +300,26 @@ const Component = (props: Props): JSX.Element => {
                                 value ? Number(value.target.value) : null,
                               );
                             }}
-                            value={values.room}
+                            defaultValue={data?.room}
                             // onChange={handleChange}
                             onBlur={handleBlur}
                           />
-                          {touched.room && errors.room ? (
-                            <div className={classes.errorMess}>
-                              {errors.room}
-                            </div>
-                          ) : null}
                         </Grid>
                         <Grid className={""} item xs={4}>
                           <Input
                             allowClear
-                            className={errors.title ? "inputBorderRed" : ""}
+                            className={"inputBorderRed"}
                             placeholder="Nhập số phòng tắm"
                             maxLength={50}
-                            // name="bathRoom"
                             onChange={value => {
                               setFieldValue(
                                 "bathRoom",
                                 value ? Number(value.target.value) : null,
                               );
                             }}
-                            value={values.bathRoom}
-                            // onChange={handleChange}
+                            defaultValue={data?.bathRoom}
                             onBlur={handleBlur}
                           />
-                          {touched.bathRoom && errors.bathRoom ? (
-                            <div className={classes.errorMess}>
-                              {errors.bathRoom}
-                            </div>
-                          ) : null}
                         </Grid>
                         <Grid className={""} item xs={4}></Grid>
                       </Grid>
@@ -326,6 +335,8 @@ const Component = (props: Props): JSX.Element => {
                               id="demo-simple-select"
                               // value={labelProvince}
                               onChange={handleChangeProvince2}
+                              defaultValue={data?.provinceId}
+
                             >
                               {authState?.listProvince.map(
                                 (item: any, index: number) => {
@@ -349,6 +360,7 @@ const Component = (props: Props): JSX.Element => {
                               id="demo-simple-select"
                               // value={age}
                               onChange={handleChangeDistinct2}
+                              defaultValue={data?.districtId}
                             >
                               {dataDistrict.map((item: any, index: number) => {
                                 return (
@@ -368,11 +380,12 @@ const Component = (props: Props): JSX.Element => {
                             <Select
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
-                              // value={age}
+                              // value={data?.wardsId}
                               onChange={e => {
                                 handleChangeAddress2(e);
                                 setFieldValue("wardsId", e.target.value);
                               }}
+                              defaultValue={data?.wardsId}
                             >
                               {dataAddress?.map((item: any, index: number) => {
                                 return (
@@ -385,11 +398,6 @@ const Component = (props: Props): JSX.Element => {
                           </FormControl>
                         </Grid>
                       </Grid>
-                      {touched.wardsId && errors.wardsId ? (
-                        <div className={classes.errorMess}>
-                          {errors.wardsId}
-                        </div>
-                      ) : null}
                       <Grid
                         style={{ paddingTop: "10px" }}
                         container
@@ -398,30 +406,20 @@ const Component = (props: Props): JSX.Element => {
                         <Grid className={""} item xs={4}>
                           <Input
                             allowClear
-                            className={errors.title ? "inputBorderRed" : ""}
+                            className={"inputBorderRed"}
                             placeholder="Nhập địa chỉ"
                             maxLength={50}
                             name="addressDetail"
-                            value={values.addressDetail}
+                            value={data?.addressDetail}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            onKeyPress={(e: any) => {
-                              if (e.key === "Enter") {
-                                handleSubmit();
-                              }
-                            }}
                           />
-                          {touched.addressDetail && errors.addressDetail ? (
-                            <div className={classes.errorMess}>
-                              {errors.addressDetail}
-                            </div>
-                          ) : null}
                         </Grid>
 
                         <Grid className={""} item xs={4}>
                           <Input
                             allowClear
-                            className={errors.title ? "inputBorderRed" : ""}
+                            className={"inputBorderRed"}
                             placeholder="Nhập mô tả nội thất phòng khách"
                             // prefix={
                             //   <UserOutlined className="site-form-item-icon" />
@@ -434,28 +432,21 @@ const Component = (props: Props): JSX.Element => {
                                 value ? value.target.value : null,
                               );
                             }}
-                            value={values.furniture}
+                            defaultValue={data?.furniture}
                             // onChange={handleChange}
                             onBlur={handleBlur}
                           />
-                          {touched.furniture && errors.furniture ? (
-                            <div className={classes.errorMess}>
-                              {errors.furniture}
-                            </div>
-                          ) : null}
                         </Grid>
                         <Grid className={""} item xs={4}>
                           <Input
                             allowClear
-                            className={
-                              errors.priceMonth ? "inputBorderRed" : ""
-                            }
+                            className={"inputBorderRed"}
                             placeholder="Nhập giá"
                             prefix={
                               <DollarCircleOutlined className="site-form-item-icon" />
                             }
                             // name="priceMonth"
-                            value={values.priceMonth}
+                            defaultValue={data?.priceMonth}
                             // onChange={handleChange}
                             onChange={value => {
                               setFieldValue(
@@ -465,11 +456,6 @@ const Component = (props: Props): JSX.Element => {
                             }}
                             onBlur={handleBlur}
                           />
-                          {touched.priceMonth && errors.priceMonth ? (
-                            <div className={classes.errorMess}>
-                              {errors.priceMonth}
-                            </div>
-                          ) : null}
                         </Grid>
                       </Grid>
 
@@ -489,6 +475,7 @@ const Component = (props: Props): JSX.Element => {
                               onChange={e => {
                                 setFieldValue("typePostId", e.target.value);
                               }}
+                              defaultValue={data?.typePostId}
                             >
                               {appState?.listPostType?.map(
                                 (item: any, index: number) => {
@@ -502,15 +489,35 @@ const Component = (props: Props): JSX.Element => {
                             </Select>
                           </FormControl>
                         </Grid>
-                        <Grid className={""} item xs={3}></Grid>
+                        <Grid className={""} item xs={3}>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="demo-simple-select-helper-label">
+                              Chọn loại hình cho thuê
+                            </InputLabel>
+                            <Select
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              onChange={e => {
+                                setFieldValue("typeEstateId", e.target.value);
+                              }}
+                              defaultValue={data?.typeEstateId}
+                            >
+                              {appState?.listTypeEstate?.map(
+                                (item: any, index: number) => {
+                                  return (
+                                    <MenuItem key={index} value={item?.value}>
+                                      {item?.label}
+                                    </MenuItem>
+                                  );
+                                },
+                              )}
+                            </Select>
+                          </FormControl>
+                        </Grid>
                         <Grid className={""} item xs={3}></Grid>
                         <Grid className={""} item xs={3}></Grid>
                       </Grid>
-                      {touched.typePostId && errors.typePostId ? (
-                        <div className={classes.errorMess}>
-                          {errors.typePostId}
-                        </div>
-                      ) : null}
+                      {data && <ImagePicker images={data.imageList.map((o : any) => ({src: o.url, value:  o.id}))} setDeleteImageId={setDeleteImageId} />}
                       <ImageUploading
                         multiple
                         value={images}
@@ -570,13 +577,9 @@ const Component = (props: Props): JSX.Element => {
                         <Grid className={""} item xs={3}>
                           <BaseButton
                             className={classes.button}
-                            onClick={() => {
-                              console.log("errors", errors);
-                              console.log(values, typeof value);
-                              handleSubmit();
-                            }}
+                            onClick={() => onPost(values)}
                           >
-                            Đăng tin
+                            {buttonText}
                           </BaseButton>
                         </Grid>
                       </Grid>

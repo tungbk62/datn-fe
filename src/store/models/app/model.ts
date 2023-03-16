@@ -16,6 +16,7 @@ type AppState = {
   token: string;
   listUserBusiness: any;
   listPostType: any;
+  listTypeEstate: any;
 };
 
 export const appModel = createModel<RootModel>()({
@@ -28,6 +29,7 @@ export const appModel = createModel<RootModel>()({
     token: "",
     listUserBusiness: null,
     listPostType: null,
+    listTypeEstate: null,
   } as AppState,
   reducers: {
     setListUserBusiness: (state, payload: any) => {
@@ -42,6 +44,12 @@ export const appModel = createModel<RootModel>()({
         listPostType: payload,
       };
     },
+    setListTypeEstate: (state, payload: any) => {
+      return {
+        ...state,
+        listTypeEstate: payload,
+      };
+    },
   },
   effects: dispatch => ({
     /// all
@@ -50,6 +58,19 @@ export const appModel = createModel<RootModel>()({
         const res = await axios.get(api.GET_TYPE_POST, payload);
         if ((res.status = SUCCESS_CODE)) {
           dispatch.appModel.setListPostType(
+            res.data.map((item: any) => ({ value: item.id, label: item.name })),
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async getListTypeEstate(payload?: any) {
+      try {
+        const res = await axios.get(api.typeEstate, payload);
+        if ((res.status = SUCCESS_CODE)) {
+          dispatch.appModel.setListTypeEstate(
             res.data.map((item: any) => ({ value: item.id, label: item.name })),
           );
         }
@@ -153,6 +174,42 @@ export const appModel = createModel<RootModel>()({
     async createPost(payload: any, state: any) {
       try {
         const res = await axios.post(api.CREATE_POST_BUSINESS, payload);
+        if (res.status !== SUCCESS_CODE) {
+          showMessage(res?.data?.message, "error");
+          return;
+        }
+        const { data } = res;
+        showMessage(res?.data?.message, "success");
+        return data;
+      } catch (err) {}
+    },
+    async updatePost(payload: any, state: any) {
+      try {
+        const res = await axios.put(api.businessUpdatePost + payload.id, payload);
+        if (res.status !== SUCCESS_CODE) {
+          showMessage(res?.data?.message, "error");
+          return;
+        }
+        const { data } = res;
+        showMessage(res?.data?.message, "success");
+        return data;
+      } catch (err) {}
+    },
+    async deleteImage(payload: any) {
+      try {
+        const res = await axios.delete(api.businessDeleteImage, {data : payload});
+        if (res.status !== SUCCESS_CODE) {
+          showMessage(res?.data?.message, "error");
+          return;
+        }
+        const { data } = res;
+        showMessage(res?.data?.message, "success");
+        return data;
+      } catch (err) {}
+    },
+    async hidePost(param) {
+      try {
+        const res = await axios.put(api.businessHidePost(param.id, param.state));
         if (res.status !== SUCCESS_CODE) {
           showMessage(res?.data?.message, "error");
           return;

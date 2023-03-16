@@ -18,6 +18,7 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import { Grid, Input, Modal, Slider, Tab, Tabs } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
+import Router from 'next/router'
 
 import { useStyles } from "./DefaultWrapper.styles";
 import { BaseButton } from "../BaseButton";
@@ -31,10 +32,12 @@ import { api } from "@src/constants";
 import { District, TypeEstate, Ward } from "@src/store/models/app/interface";
 import PriceSlider from "./PriceSlider";
 import Notifications from "../Notifications";
+import { BaseModal } from "../BaseModal";
+import FilterMenu from "../FilterMenu/FilterMenu";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
-type FormType = "edit-post" | "edit-profile" | "change-pw" | "notifications";
+type FormType = "edit-post" | "edit-profile" | "change-pw" | "notifications" | "filter";
 
 const mapState = (rootState: RootState) => ({
   appState: rootState.appModel,
@@ -71,6 +74,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const [postFormOpened, setPostFormOpened] = useState(false);
   const [notiOpened, setNotiFormOpened] = useState(false);
   const [changePwFormOpened, setChangePwFormOpened] = useState(false);
+  const [isFilter, setIsFilter] = useState(false);
 
   useEffect(() => {
     const getSystemsData = async () => {
@@ -78,6 +82,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
       setUserDataId(userId?.id);
       await appReducer?.getListPostType();
       await authReducer?.getListProvince();
+      await appReducer?.getListTypeEstate();
     };
     getSystemsData();
   }, [appReducer, authReducer]);
@@ -99,6 +104,10 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         }
         case "change-pw": {
           setChangePwFormOpened(open);
+          return;
+        }
+        case "filter": {
+          setIsFilter(open);
           return;
         }
       }
@@ -351,7 +360,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
               <MenuIcon />
             </button>
             <div className={classes.logoCpn}>
-              <img src="/assets/logo_main.png" alt="" />
+              <img src="/assets/logo_main.png" alt="" onClick={() => Router.push("/")}/>
             </div>
             <Tabs
               className={classes.tabsDesktop}
@@ -371,88 +380,11 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
                 className={`${classes.inputRoot} ${classes.inputInput}`}
               />
             </div>
-            <SelectAntd
-              defaultValue="Chọn tỉnh"
-              options={authState?.listProvince}
-              onChange={handleChangeProvince}
-            />
-            <Gap.XS />
-            <SelectAntd
-              defaultValue="Chọn thành phố"
-              options={districts}
-              onChange={handleChangeDistinct}
-            />
-            <Gap.XS />
-            <SelectAntd
-              defaultValue="Chọn phường/xã"
-              options={wards}
-              onChange={(e: string) => {
-                console.log(e);
-                setIdAddress(e);
-              }}
-            />
-            <Gap.XS />
-            <Grid className={classes.pricingWrap} spacing={3}>
-              <Typography id="input-slider" gutterBottom>
-                Giá
-              </Typography>
-              <Gap.S />
-              <Grid container spacing={2} alignItems="center">
-                <Input
-                  style={{ width: 80 }}
-                  value={prices[0]}
-                  onChange={e => setPrices([Number(e.target.value), prices[1]])}
-                  margin="dense"
-                  inputProps={{
-                    step: 10,
-                    min: 0,
-                    max: 100,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-                <Gap.XS />
-                <Grid item md>
-                  <PriceSlider
-                    value={prices}
-                    min={500}
-                    max={20000}
-                    onChange={(_, newVal) =>
-                      setPrices(newVal as [number, number])
-                    }
-                  />
-                </Grid>
-                <Gap.XS />
-                <Input
-                  style={{ width: 100 }}
-                  value={prices[1]}
-                  onChange={e => setPrices([prices[0], Number(e.target.value)])}
-                  margin="dense"
-                  inputProps={{
-                    step: 10,
-                    min: 0,
-                    max: 100,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
-            <Gap.XS />
-            <SelectAntd
-              defaultValue="Loại hình cho thuê"
-              options={typeEstates.map(item => ({
-                label: item.name,
-                value: item.id,
-              }))}
-              onChange={(e: string) => {
-                console.log(e);
-              }}
-            />
-            <Gap.XS />
             <BaseButton
               className={classes.loginButton}
-              onClick={onPressOpenModal}
+              onClick={() => {
+                console.log("helooooo");
+                setIsFilter(true);}}
             >
               Tìm kiếm
             </BaseButton>
@@ -558,6 +490,13 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         onClose={handleFormAction("notifications", false)}
       >
         <Notifications userId={authState.userInfo?.id as number} />
+      </Modal>
+      <Modal
+        className={classes.center}
+        open={isFilter}
+        onClose={handleFormAction("filter", false)}
+      >
+        <FilterMenu userId={authState.userInfo?.id as number}/>
       </Modal>
     </>
   );

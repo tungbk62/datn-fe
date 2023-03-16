@@ -14,12 +14,16 @@ import TableHead from "@material-ui/core/TableHead";
 import { Grid, Paper } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import EditIcon from "@material-ui/icons/Edit";
 import Avatar from "@material-ui/core/Avatar";
 import { useRouter } from "next/router";
 import { TitleText } from "src/components/TitleText";
+import { api } from "@src/constants";
+import { apiHelper } from "@src/helpers";
+import { PostEditModal } from "@src/components/PostEditModal";
 
 interface Column {
   id: "id" | "createdBy" | "title" | "type" | "mainImageUrl" | "" | "address";
@@ -67,9 +71,11 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(8);
   const [publishPostData, setPublishPostData] = useState([]) as any;
+  const [postFormOpened, setPostFormOpened] = useState(false);
   const emptyRows =
     rowsPerPage -
     Math.min(rowsPerPage, publishPostData.length - page * rowsPerPage);
+  const [postData, setPostData] = useState() as any;  
 
   useEffect(() => {
     const getMyPost = async () => {
@@ -105,35 +111,51 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
     setPage(0);
   };
 
+  const handleChangeItemData = (id : number, hide : boolean) =>{
+    console.log(publishPostData);
+    const index = publishPostData.findIndex((o : any) => o.id === id);
+    console.log("index", index);
+    publishPostData[index].hide = hide;
+    let newPublishPostData = [...publishPostData];
+    setPublishPostData(newPublishPostData);
+  }
+
   const handleModalOpen = async (
-    type: "edit-post" | "lock" | "hide",
+    type: "edit-post" | "hide",
     item = null,
   ) => {
     console.log(item);
     switch (type) {
       case "edit-post":
         {
-          // onPressOpenModal();
-          // const data = await appReducer?.getDetailUser(item?.id);
-          // setDataModal(data);
+          console.log("Dcm binh test");
+          const res = await apiHelper.get(api.businessPostDetail + item?.id);
+          if(res){
+            setPostData(res);
+            setPostFormOpened(true);
+            console.log(postData);
+          }
         }
         return;
-      case "lock":
-        {
-          // const params = {
-          //   user: item?.id,
-          //   display: item?.displayReview ? 0 : 1,
-          // };
-          // await appReducer?.displayReviewNormalUser(params);
-        }
-        return;
+      // case "lock":
+      //   {
+      //     // const params = {
+      //     //   user: item?.id,
+      //     //   display: item?.displayReview ? 0 : 1,
+      //     // };
+      //     // await appReducer?.displayReviewNormalUser(params);
+      //   }
+      //   return;
       case "hide":
         {
-          // const params = {
-          //   post: item?.id,
-          //   locked: item?.locked ? 1 : 0,
-          // };
-          // await appReducer?.lockNormalPost(params);
+          const params = {
+            id: item?.id,
+            state: item?.hide ? false : true,
+          };
+          const res = await appReducer?.hidePost(params);
+          if(res){
+            handleChangeItemData(params.id, params.state);
+          }
         }
         return;
 
@@ -153,21 +175,21 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
         >
           <EditIcon />
         </IconButton>
-        <IconButton
+        {/* <IconButton
           color="inherit"
           onClick={() => {
             handleModalOpen("lock", item);
           }}
         >
           {item?.locked ? <LockIcon /> : <LockOpenIcon />}
-        </IconButton>
+        </IconButton> */}
         <IconButton
           color="inherit"
           onClick={() => {
             handleModalOpen("hide", item);
           }}
         >
-          <VisibilityIcon />
+          {item?.hide ? <VisibilityOffOutlinedIcon/> : <VisibilityIcon />}
         </IconButton>
       </div>
     );
@@ -295,6 +317,11 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
           </Grid>
         </Grid>
       </div>
+      <PostEditModal
+        visible={postFormOpened}
+        hideModal={() => {setPostFormOpened(false)}}
+        data={postData}
+      />
     </AppWrapper>
   );
 };

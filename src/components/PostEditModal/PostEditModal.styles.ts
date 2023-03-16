@@ -18,17 +18,17 @@ export const useStyles = makeStyles((theme: any) => ({
   },
   container: {
     width: "800px",
-    height: "450px",
+    height: "600px",
     "& .ql-editor": {
       maxHeight: "180px",
       minHeight: "180px",
     },
   },
   containerContent: {
-    height: "400px",
+    height: "600px",
     overflowY: "scroll",
     overflowX: "hidden",
-    maxHeight: 420,
+    // maxHeight: 420,
   },
   bannerContainer: {
     display: "flex",

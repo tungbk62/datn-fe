@@ -101,11 +101,11 @@ const Notifications: React.FC<Props> = () => {
 
   return (
     <div className={classes.container}>
-      <h2>Thong bao</h2>
+      <h2>Thông báo</h2>
       <AppBar position="static">
         <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="simple tabs example" style={{ background: "white" }}>
-          <Tab label="Da doc" {...a11yProps(0)} />
-          <Tab label="Chua doc" {...a11yProps(1)} />
+          <Tab label="Đã đọc" {...a11yProps(0)} />
+          <Tab label="Chưa đọc" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
