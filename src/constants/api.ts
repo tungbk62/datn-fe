@@ -76,4 +76,8 @@ export const api = {
   businessUpdatePost: `${BASE_URL_API}/post/business/`,
   businessDeleteImage: `${BASE_URL_API}/image/business/post`,
   businessHidePost: (postId: number, state: boolean) => `${BASE_URL_API}/post/business/hide/${postId}?hide=${state}`,
+  getListPostPublic: `${BASE_URL_API}/post/public/list`,
+  getUserDetail: `${BASE_URL_API}/user`,
+  getProvinceList: `${BASE_URL_API}/address/public/province`,
+  getDetailProvince: (provinceId: number) => `${BASE_URL_API}/address/public/province/${provinceId}`,
 };

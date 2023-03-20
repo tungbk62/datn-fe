@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "antd/dist/antd.css";
-import { Select as SelectAntd } from "antd";
 import { connect } from "react-redux";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -19,6 +18,7 @@ import { Grid, Input, Modal, Slider, Tab, Tabs } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
 import Router from 'next/router'
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 import { useStyles } from "./DefaultWrapper.styles";
 import { BaseButton } from "../BaseButton";
@@ -30,9 +30,7 @@ import { Dispatch, RootState } from "@src/store";
 import { apiHelper } from "@src/helpers";
 import { api } from "@src/constants";
 import { District, TypeEstate, Ward } from "@src/store/models/app/interface";
-import PriceSlider from "./PriceSlider";
 import Notifications from "../Notifications";
-import { BaseModal } from "../BaseModal";
 import FilterMenu from "../FilterMenu/FilterMenu";
 
 type Anchor = "top" | "left" | "bottom" | "right";
@@ -56,6 +54,19 @@ type Props = StateProps &
     children: React.ReactNode;
   };
 
+const SearchValue = {
+  province: null,
+  district: null,
+  wards: null,
+  address: null,
+  type: null,
+  room: null,
+  pricemin: null,
+  pricemax: null,
+  areamin: null,
+  areamax: null
+}
+
 const AppWrapperComponent = (props: Props): JSX.Element => {
   const classes = useStyles();
   const router = useRouter();
@@ -75,6 +86,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const [notiOpened, setNotiFormOpened] = useState(false);
   const [changePwFormOpened, setChangePwFormOpened] = useState(false);
   const [isFilter, setIsFilter] = useState(false);
+  const [queryValue, setQueryValue] = useState("");
 
   useEffect(() => {
     const getSystemsData = async () => {
@@ -159,8 +171,6 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
   const [typeEstates, setTypeEstates] = useState<TypeEstate[]>([]);
-  const [idAddress, setIdAddress] = useState([]);
-  const [prices, setPrices] = useState<[number, number]>([500, 20000]);
 
   useEffect(() => {
     const getTypeEstates = async () => {
@@ -181,22 +191,6 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
     };
     getDataDistinct();
   }, [authReducer, province]);
-
-  const handleChangeProvince = (value: string) => {
-    setProvince(value);
-  };
-
-  const handleChangeDistinct = (value: string) => {
-    const tmp = authState?.detailProvince.filter(
-      (item: any) => item.id === value,
-    );
-    const tmp2 = tmp[0]?.value.map((item: any) => ({
-      value: item.id,
-      label: item.name,
-    }));
-    console.log(tmp2);
-    setWards(tmp2);
-  };
 
   const list = (anchor: Anchor) => (
     <div
@@ -378,13 +372,21 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
               <input
                 placeholder="Tìm kiếm…"
                 className={`${classes.inputRoot} ${classes.inputInput}`}
+                onChange={(e : any) => {setQueryValue(e.target.value);}}
               />
             </div>
+            <IconButton
+                  color="inherit"
+                  aria-label="noti"
+                  style={{marginRight: 16}}
+                  onClick={() => {setIsFilter(true)}}
+                ><FilterAltIcon/></IconButton>
             <BaseButton
               className={classes.loginButton}
               onClick={() => {
                 console.log("helooooo");
-                setIsFilter(true);}}
+                console.log("queryValue", queryValue);
+                router.push("/search?queryValue=" + queryValue);}}
             >
               Tìm kiếm
             </BaseButton>
@@ -471,11 +473,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         hideModal={handleFormAction("edit-post", false)}
       />
       <Modal
+        style={{zIndex:20}}
         className={classes.center}
         open={infoFormOpened}
         onClose={handleFormAction("edit-profile", false)}
       >
-        <InfoForm provinces={[]} onSubmit={console.log} />
+        <InfoForm authReducer={authReducer}/>
       </Modal>
       <Modal
         className={classes.center}
@@ -492,11 +495,12 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
         <Notifications userId={authState.userInfo?.id as number} />
       </Modal>
       <Modal
+        style={{zIndex:20}}
         className={classes.center}
         open={isFilter}
         onClose={handleFormAction("filter", false)}
       >
-        <FilterMenu userId={authState.userInfo?.id as number}/>
+        <FilterMenu queryValue={queryValue} authReducer={authReducer} authState={authState}/>
       </Modal>
     </>
   );

@@ -13,70 +13,129 @@ import {
 import { useStyles } from "./styles";
 import { apiHelper } from "@src/helpers";
 import { api } from "@src/constants";
-import {
-  RegisterValidation,
-  registerValidationSchema,
-} from "@src/store/models/auth/interface";
+// import {
+//   RegisterValidation,
+//   registerValidationSchema,
+// } from "@src/store/models/auth/interface";
 
 type Province = { value: number; label: string };
 type District = { value: number; label: string };
 type Ward = { value: number; label: string };
 
 type Props = {
-  provinces: Province[];
-  onSubmit: (values: RegisterValidation) => void;
+  authReducer: any;
+  authState: any;
+  // onSubmit: (values: RegisterValidation) => void;
 };
 
 const InfoForm: React.FC<Props> = props => {
   const classes = useStyles();
-  const [province, setProvince] = useState() as any;
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [wards, setWards] = useState<Ward[]>([]);
+  const [provinceId, setProvinceId] = useState() as any;
+  const [districtId, setDistrictId] = useState();
+  const [wardsId, setWardsId] = useState();
+  const [dataProvince, setDataProvince] = useState([]) as any;
+  const [dataDistrict, setDataDistrict] = useState([]) as any;
+  const [dataWards, setDataWards] = useState([]) as any;
+  const [dataDistrictWards, setDataDistrictWards] = useState([]) as any;
+  const [userData, setUserData] = useState() as any;
+  let userDataVariable : any;
+  let dataProvinceVariable : any;
+  let dataDistrictVariable : any;
+  let dataWardsVariable : any;
+  let dataDistrictWardsVariable : any;
 
-  const handleChangeProvince = (value: string) => {
-    setProvince(value);
-  };
+  const onPost = (data: any) =>{
 
-  const handleChangeDistrict = (value: string) => {
-    // const tmp = districts.filter(item => item.id === value);
-    // const tmp2 = tmp[0]?.value.map((item: any) => ({
-    //   value: item.id,
-    //   label: item.name,
-    // }));
-    // console.log(tmp2);
-    // setDataAddress(tmp2);
-  };
+  }
+
+  // useEffect(() => {
+  //   if (!province) {
+  //     return;
+  //   }
+  //   const getDistricts = async () => {
+  //     // const data = await authReducer?.getDetailProvince(province);
+  //     const data = await apiHelper.get<District[]>(
+  //       `${api.GET_LIST_PROVINCE}/${province}`,
+  //     );
+  //     console.log("data district", data);
+  //     setDataDistrict(data);
+  //   };
+  //   getDistricts();
+  // }, [province]);
+
+  const getDistrictList = async (provinceId: number) =>{
+    console.log("provinceId", provinceId)
+    const data = await apiHelper.get<any>(api.getDetailProvince(provinceId));
+      if(data){
+        dataDistrictWardsVariable = data;
+        setDataDistrictWards(data);
+        setDataDistrict(dataDistrictWardsVariable.district.map((o: any) => { return {value: o.id, label: o.name}}))
+      }
+  }
+
+  const getWardsList = async (districtId: any) => {
+    console.log("districtId", dataDistrictWardsVariable);
+    const data = dataDistrictWardsVariable.district.filter((o :any) => o.id === districtId)[0].map((o: any) => { return {value: o.id, label: o.name}});
+    console.log("districtId", data);
+    dataWardsVariable = data;
+    setDataWards(data);
+  }
 
   useEffect(() => {
-    if (!province) {
-      return;
-    }
-    const getDistricts = async () => {
-      // const data = await authReducer?.getDetailProvince(province);
-      const data = await apiHelper.get<District[]>(
-        `${api.GET_LIST_PROVINCE}/${province}`,
-      );
-      console.log("data district", data);
-      setDistricts(data);
+    console.log("get user detail");
+    const getUserData = async () => {
+      const data = await apiHelper.get<any>(api.getUserDetail);
+      userDataVariable = data;
+      setUserData(data);
+      console.log("end get user data");
     };
-    getDistricts();
-  }, [province]);
+
+    const getProvinceList = async () => {
+      console.log("heloooo");
+      const data = await apiHelper.get<any>(api.getProvinceList);
+      if(data){
+        // console.log("list province", data);
+        const dataMap = data.map((o :any) => {return {value: o.id, label: o.name}})
+        console.log("end get province list", dataMap);
+        setDataProvince(dataMap);
+        getDistrictList(userDataVariable.provinceId);
+        getWardsList(userDataVariable.districtId);
+        // setProvinceId(userData.provinceId);
+        // console.log("end get province list", userData);
+      }
+    }
+    getUserData().then(() => {getProvinceList()});
+    
+  },[]);
+
+  // useEffect(() =>{
+  //   if(!provinceId){
+  //     return;
+  //   }
+  //   console.log("useEffect get district", provinceId);
+  //   getDistrictList(provinceId);
+  // }, [provinceId])
+
+  // useEffect(() =>{
+  //   if(!districtId){
+  //     return;
+  //   }
+  //   console.log("useEffect get wards", districtId);
+  //   getWardsList(districtId);
+  // }, [districtId])
 
   return (
     <Formik
-      validateOnChange={false}
-      validationSchema={registerValidationSchema}
       initialValues={{
-        email: "",
-        password: "",
-        firstName: "",
-        lastName: "",
-        birthDay: "",
-        phone: "",
-        type: "",
-        wardsId: "",
+        email: null,
+        password: null,
+        firstName: null,
+        lastName: null,
+        birthDay: null,
+        phone: null,
+        wardsId: null,
       }}
-      onSubmit={props.onSubmit}
+      onSubmit={onPost}
       validateOnBlur
     >
       {({
@@ -84,8 +143,6 @@ const InfoForm: React.FC<Props> = props => {
         handleBlur,
         handleSubmit,
         values,
-        touched,
-        errors,
         setFieldValue,
       }) => {
         return (
@@ -100,7 +157,7 @@ const InfoForm: React.FC<Props> = props => {
                   }}
                 >
                   <Avatar
-                    src="/public/default-profile.jpg"
+                    src = {userData?.imageUrl}
                     className={classes.avatar}
                   />
                   <Button
@@ -115,13 +172,19 @@ const InfoForm: React.FC<Props> = props => {
                 </div>
                 <Input
                   allowClear
-                  className={errors.email ? "inputBorderRed" : ""}
-                  placeholder="Enter your email"
+                  className={""}
+                  placeholder="Nhập địa chỉ email"
                   prefix={<UserOutlined className="site-form-item-icon" />}
                   maxLength={50}
                   name="email"
-                  value={values.email}
-                  onChange={handleChange}
+                  value={userData?.email}
+                  onChange={value => {
+                    console.log(value.target.value);
+                    setFieldValue(
+                      "email",
+                      value ? value.target.value : null,
+                    );
+                  }}
                   onBlur={handleBlur}
                   onKeyPress={(e: any) => {
                     if (e.key === "Enter") {
@@ -129,38 +192,32 @@ const InfoForm: React.FC<Props> = props => {
                     }
                   }}
                 />
-                {touched.email && errors.email ? (
-                  <div className={classes.errorMess}>{errors.email}</div>
-                ) : null}
                 <Grid style={{ paddingTop: "10px" }} container spacing={1}>
                   <Grid className={""} item xs={6}>
                     <Input
                       allowClear
-                      className={errors.email ? "inputBorderRed" : ""}
+                      className={""}
                       placeholder="Nhập họ"
                       maxLength={50}
-                      name="lastName"
+                      name="firstName"
                       onChange={value => {
                         setFieldValue(
                           "lastName",
                           value ? value.target.value : null,
                         );
                       }}
-                      value={values.lastName}
+                      value={userData?.firstName}
                       onBlur={handleBlur}
                     />
-                    {touched.lastName && errors.lastName ? (
-                      <div className={classes.errorMess}>{errors.lastName}</div>
-                    ) : null}
                   </Grid>
                   <Grid className={""} item xs={6}>
                     <Input
                       allowClear
-                      className={errors.email ? "inputBorderRed" : ""}
+                      className={""}
                       placeholder="Nhập tên"
                       maxLength={50}
-                      name="firstName"
-                      value={values.firstName}
+                      name="lastName"
+                      value={userData?.lastName}
                       onChange={value => {
                         setFieldValue(
                           "firstName",
@@ -174,21 +231,17 @@ const InfoForm: React.FC<Props> = props => {
                         }
                       }}
                     />
-                    {touched.firstName && errors.firstName ? (
-                      <div className={classes.errorMess}>
-                        {errors.firstName}
-                      </div>
-                    ) : null}
                   </Grid>
                 </Grid>
                 <Grid style={{ paddingTop: "10px" }} container spacing={1}>
-                  <Grid className={""} item xs={6}>
+                  {/* <Grid className={""} item xs={6}>
                     <DatePicker
                       // allowClear
                       style={{
                         width: "100%",
                         // height: "100%"
                       }}
+                      value={userData?.birthDay}
                       onChange={value => {
                         console.log(value?.format("yyyy-MM-DD"));
                         setFieldValue(
@@ -197,20 +250,17 @@ const InfoForm: React.FC<Props> = props => {
                         );
                       }}
                       format="DD/MM/YYYY"
-                      className={errors.birthDay ? "inputBorderRed" : ""}
+                      className={""}
                       placeholder="Ngày sinh"
                       name="birthDay"
                     />
-                    {touched.birthDay && errors.birthDay ? (
-                      <div className={classes.errorMess}>{errors.birthDay}</div>
-                    ) : null}
-                  </Grid>
+                  </Grid> */}
                   <Grid className={""} item xs={6}>
                     <Input
                       allowClear
-                      className={errors.phone ? "inputBorderRed" : ""}
+                      className={""}
                       placeholder="Nhập SDT"
-                      value={values.phone}
+                      value={userData?.phone}
                       onChange={value => {
                         setFieldValue(
                           "phone",
@@ -219,34 +269,34 @@ const InfoForm: React.FC<Props> = props => {
                       }}
                       onBlur={handleBlur}
                     />
-                    {touched.phone && errors.phone ? (
-                      <div className={classes.errorMess}>{errors.phone}</div>
-                    ) : null}
                   </Grid>
                 </Grid>
 
                 <Grid style={{ paddingTop: "10px" }} container spacing={1}>
                   <Grid className={""} item xs={4}>
                     <SelectAntd
-                      defaultValue="Chọn tỉnh"
+                      placeholder="Chọn tỉnh"
                       className={classes.selectStyles}
-                      options={props.provinces}
-                      onChange={handleChangeProvince}
+                      value={userData?.provinceId}
+                      options={dataProvince}
+                      onChange={(e) => {setProvinceId(e)}}
                     />
                   </Grid>
                   <Grid className={""} item xs={4}>
                     <SelectAntd
-                      defaultValue="Chọn thành phố"
+                      placeholder="Chọn huyện"
                       className={classes.selectStyles}
-                      options={districts}
-                      onChange={handleChangeDistrict}
+                      options={dataDistrict}
+                      value={userData?.districtId}
+                      onChange={(e) => {setDistrictId(e)}}
                     />
                   </Grid>
                   <Grid className={""} item xs={4}>
                     <SelectAntd
-                      defaultValue="Chọn phường/xã"
+                      placeholder="Chọn phường/xã"
                       className={classes.selectStyles}
-                      options={wards}
+                      options={dataWards}
+                      value={userData?.wardsId}
                       onChange={(e: any) => {
                         // handleChangeAddress(e);
                         setFieldValue("wardsId", e);
@@ -254,9 +304,6 @@ const InfoForm: React.FC<Props> = props => {
                     />
                   </Grid>
                 </Grid>
-                {touched.wardsId && errors.wardsId ? (
-                  <div className={classes.errorMess}>{errors.wardsId}</div>
-                ) : null}
               </div>
             </div>
             <div className={classes.formRegisterButton}>
@@ -264,14 +311,9 @@ const InfoForm: React.FC<Props> = props => {
                 variant="contained"
                 color="primary"
                 className={classes.registerBtn}
-                onClick={() => handleSubmit()}
-                onKeyPress={e => {
-                  if (e.key === "Enter") {
-                    handleSubmit();
-                  }
-                }}
+                onClick={() => onPost(values)}
               >
-                cập nhật
+                Cập nhật
               </Button>
             </div>
           </div>
@@ -284,21 +326,18 @@ const InfoForm: React.FC<Props> = props => {
 export const ChangePWForm: React.FC = props => {
   const classes = useStyles();
 
+  const onChangePassword = (data: any) =>{
+
+  }
+
   return (
     <Formik
-      validateOnChange={false}
-      validationSchema={registerValidationSchema}
       initialValues={{
-        email: "",
-        password: "",
-        firstName: "",
-        lastName: "",
-        birthDay: "",
-        phone: "",
-        type: "",
-        wardsId: "",
+        oldPassword: null,
+        newPassword: null,
+        reNewPassword: null,
       }}
-      onSubmit={props.onSubmit}
+      onSubmit={onChangePassword}
       validateOnBlur
     >
       {({
@@ -306,9 +345,6 @@ export const ChangePWForm: React.FC = props => {
         handleBlur,
         handleSubmit,
         values,
-        touched,
-        errors,
-        setFieldValue,
       }) => {
         return (
           <div className={classes.container}>
@@ -316,7 +352,7 @@ export const ChangePWForm: React.FC = props => {
               <div className={classes.formRegisterInput}>
                 <Input.Password
                   allowClear
-                  className={errors.password ? "inputBorderRed" : ""}
+                  className={""}
                   placeholder="Nhập mật khẩu cũ"
                   prefix={<SafetyOutlined className="site-form-item-icon" />}
                   style={{ marginTop: "10px" }}
@@ -325,7 +361,6 @@ export const ChangePWForm: React.FC = props => {
                   }
                   maxLength={50}
                   name="password"
-                  value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   onKeyPress={(e: any) => {
@@ -336,7 +371,6 @@ export const ChangePWForm: React.FC = props => {
                 />
                 <Input.Password
                   allowClear
-                  className={errors.password ? "inputBorderRed" : ""}
                   placeholder="Nhập mật khẩu mới"
                   prefix={<SafetyOutlined className="site-form-item-icon" />}
                   style={{ marginTop: "10px" }}
@@ -345,7 +379,6 @@ export const ChangePWForm: React.FC = props => {
                   }
                   maxLength={50}
                   name="password"
-                  value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   onKeyPress={(e: any) => {
@@ -356,7 +389,6 @@ export const ChangePWForm: React.FC = props => {
                 />
                 <Input.Password
                   allowClear
-                  className={errors.password ? "inputBorderRed" : ""}
                   placeholder="Nhập lại mật khẩu mới"
                   prefix={<SafetyOutlined className="site-form-item-icon" />}
                   style={{ marginTop: "10px" }}
@@ -365,7 +397,6 @@ export const ChangePWForm: React.FC = props => {
                   }
                   maxLength={50}
                   name="password"
-                  value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   onKeyPress={(e: any) => {
@@ -381,14 +412,14 @@ export const ChangePWForm: React.FC = props => {
                 variant="contained"
                 color="primary"
                 className={classes.registerBtn}
-                onClick={() => handleSubmit()}
+                onClick={() => onChangePassword(values)}
                 onKeyPress={e => {
                   if (e.key === "Enter") {
                     handleSubmit();
                   }
                 }}
               >
-                cập nhật
+                Cập nhật
               </Button>
             </div>
           </div>

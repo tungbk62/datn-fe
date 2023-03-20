@@ -136,7 +136,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       // marginLeft:"24px",
       background: "#ff7961",
       fontSize: 14,
-      color: "#fff",
+      color: "#000000",
       borderRadius: 8,
       fontWeight: 400,
       padding: "12px 0",

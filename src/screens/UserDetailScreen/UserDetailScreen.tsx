@@ -128,7 +128,6 @@ const UserDetailScreenComponent = (props: Props): JSX.Element => {
     switch (type) {
       case "edit-post":
         {
-          console.log("Dcm binh test");
           const res = await apiHelper.get(api.businessPostDetail + item?.id);
           if(res){
             setPostData(res);
