@@ -56,17 +56,19 @@ const Component = (props: Props): JSX.Element => {
               <div className={classes.textStyle}>{userData?.id}</div>
             </div>
             <div className={classes.textBox}>
-              <div className={classes.textStyle}>SDT:</div>
+              <div className={classes.textStyle}>SĐT:</div>
               <div className={classes.textStyle}>{userData?.phone}</div>
             </div>
             <div className={classes.textBox}>
               <div className={classes.textStyle}>Địa chỉ:</div>
               <div className={classes.textStyle}>
-                {userData?.province +
+                {userData?.wards +
                   // ", " +
                   // userData?.district +
                   ", " +
-                  userData?.wards}
+                  userData?.district +
+                  ", " +
+                  userData?.province}
               </div>
             </div>
           </Grid>

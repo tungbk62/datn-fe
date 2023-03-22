@@ -25,9 +25,10 @@ import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutline
 import { UserDetailModal } from "src/components/UserDetailModal";
 import { Input } from "@material-ui/core";
 import { debounce } from "lodash";
+import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 
 interface Column {
-  id: "id" | "name" | "email" | "type" | "imageUrl" | "";
+  id: "id" | "name" | "email" | "type" | "imageUrl" | "" | "stt" | "type";
   label: string;
   minWidth?: number;
   align?: "right";
@@ -35,12 +36,19 @@ interface Column {
 }
 
 const columns: Column[] = [
-  { id: "imageUrl", label: "Người dùng", minWidth: 100 },
-  { id: "id", label: "Id", minWidth: 100 },
-  { id: "name", label: "Tên", minWidth: 100 },
+  { id: "stt", label: "STT", minWidth: 50, maxWidth: 50 },
+  { id: "id", label: "ID", minWidth: 50, maxWidth: 50 },
+  { id: "imageUrl", label: "Avatar", minWidth: 50 },
+  { id: "name", label: "Họ Tên", minWidth: 100 },
   {
     id: "email",
-    label: "email",
+    label: "Email",
+    minWidth: 100,
+    // align: 'right',
+  },
+  {
+    id: "type",
+    label: "Loại tài khoản",
     minWidth: 100,
     // align: 'right',
   },
@@ -121,38 +129,36 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
     getListUser();
   }, [getListUser]);
 
-  const handleModalOpen = async (type?: string, item?: any) => {
-    switch (type) {
-      case "view":
-        {
-          onPressOpenModal();
-          const data = await appReducer?.getDetailUser(item?.id);
-          setDataModal(data);
-        }
-        return;
-      case "review":
-        {
-          const params = {
-            user: item?.id,
-            display: item?.displayReview ? 0 : 1,
-          };
-          await appReducer?.displayReviewNormalUser(params);
-        }
-        return;
-      case "lock":
-        {
-          const params = {
-            user: item?.id,
-            locked: item?.locked ? 1 : 0,
-          };
-          await appReducer?.lockNormalUser(params);
-        }
-        return;
+  const handleChangeData = (item: any, state: any) => {
 
-      default:
-        break;
+    const index = rows.findIndex((o : any) => o.id === item.id);
+    console.log(index);
+
+    if(index === "undefined"){
+      return;
     }
-  };
+
+    rows[index].locked = state;
+
+    let newRows = [...rows];
+    setRows(newRows);
+  }
+
+  const handleLocked = async (item: any) => {
+          const state = !item.locked;
+          const data = await appReducer?.lockNormalUser({userId: item?.id, status: state});
+          if(data){
+            handleChangeData(item, state);
+          }
+  }
+
+  const openUserDetail = async(item: any) => {
+    const data = await appReducer?.getDetailUser(item?.id);
+      if(data){
+        setOpenModal(true);
+        setDataModal(data);
+      }
+  }
 
   const renderFunctionIcon = (item: any) => {
     return (
@@ -160,39 +166,24 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
         <IconButton
           color="inherit"
           aria-label="open drawer"
+          title="Khoá tài khoản"
           onClick={() => {
-            handleModalOpen("review", item);
+            handleLocked(item);
           }}
           edge="start"
-          // className={}
-        >
-          {item?.displayReview ? (
-            <CheckBoxOutlinedIcon />
-          ) : (
-            <CheckBoxOutlineBlankOutlinedIcon />
-          )}
-        </IconButton>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => {
-            handleModalOpen("lock", item);
-          }}
-          edge="start"
-          // className={}
         >
           {item?.locked ? <LockIcon /> : <LockOpenIcon />}
         </IconButton>
         <IconButton
           color="inherit"
           aria-label="open drawer"
+          title="Xem chi tiết thông tin tài khoản"
           onClick={() => {
-            handleModalOpen("view", item);
+            openUserDetail(item);
           }}
           edge="start"
-          // className={}
         >
-          <VisibilityIcon />
+          <ViewHeadlineIcon />
         </IconButton>
       </div>
     );
@@ -210,7 +201,7 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
   return (
     <ManagementWrapper title={"Quản lý người dùng"}>
       <Input
-        placeholder="Nhập query bài viết cần duyệt báo cáo"
+        placeholder="Nhập thông tin người dùng cần tìm kiếm"
         style={{ width: 350 }}
         onChange={debounce(e => {
           getListUser(e.target.value);
@@ -235,8 +226,15 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
             {rows
               ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row: any, index: number) => {
+                console.log(row);
                 return (
                   <TableRow key={index}>
+                    <TableCell component="th" scope="row">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.id}
+                    </TableCell>
                     <TableCell component="th" scope="row">
                       <Avatar
                         alt="Avatar"
@@ -244,9 +242,9 @@ const UserManagementScreenComponent = (props: Props): JSX.Element => {
                         className={classes.small}
                       />
                     </TableCell>
-                    <TableCell component="th">{row.id}</TableCell>
                     <TableCell align="left">{row.name}</TableCell>
                     <TableCell align="left">{row.email}</TableCell>
+                    <TableCell align="left">{row.type === "BUSINESS" ? "Kinh doanh" : "Khách hàng"}</TableCell>
                     <TableCell align="right">
                       {renderFunctionIcon(row)}
                     </TableCell>

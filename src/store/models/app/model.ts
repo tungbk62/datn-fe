@@ -110,18 +110,17 @@ export const appModel = createModel<RootModel>()({
     },
     async lockNormalUser(payload: any, state: any) {
       try {
-        const res = await axios.put(
-          getQueryURL(`${api.LOCK_ACCOUNT_ADMIN}/${payload?.user}`, {
-            locked: payload?.locked,
-          }),
-        );
+        const res = await axios.put(`${api.LOCK_ACCOUNT_ADMIN}/${payload?.userId}`, null, {params: {
+            locked: payload?.status}});
+
         if (res.status != SUCCESS_CODE) {
           showMessage(res?.data?.message, "error");
-          return;
+          return false;
         }
         showMessage(res?.data?.message, "success");
+        return true;
       } catch (error) {
-        console.log(error);
+        return false;
       }
     },
     async displayReviewNormalUser(payload: any, state: any) {
@@ -153,20 +152,57 @@ export const appModel = createModel<RootModel>()({
         console.log(error);
       }
     },
-    async lockNormalPost(payload: any, state: any) {
+    async hidePostForAdmin(payload: any, state: any) {
       try {
-        const res = await axios.put(
-          getQueryURL(`${api.LOCK_ACCOUNT_ADMIN}/${payload?.post}`, {
-            locked: payload?.locked,
-          }),
-        );
+        const res = await axios.put(api.changeStatePostForAdmin(payload.postId), null, {
+          params: {hide: payload.status}
+          });
+
         if (res.status != SUCCESS_CODE) {
           showMessage(res?.data?.message, "error");
-          return;
+          return false;
         }
         showMessage(res?.data?.message, "success");
+        return true;
       } catch (error) {
         console.log(error);
+        return false;
+      }
+    },
+    async lockPostForAdmin(payload: any, state: any) {
+      console.log("lock data", payload.status);
+      try {
+        const res = await axios.put(api.changeStatePostForAdmin(payload.postId), null, {
+          params: {locked: payload.status}
+          });
+
+        if (res.status != SUCCESS_CODE) {
+          showMessage(res?.data?.message, "error");
+          return false;
+        }
+        showMessage(res?.data?.message, "success");
+        return true;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+
+    async verifiedPostForAdmin(payload: any, state: any) {
+      try {
+        const res = await axios.put(api.changeStatePostForAdmin(payload.postId), null, {
+          params: {verified: payload.status}
+          });
+
+        if (res.status != SUCCESS_CODE) {
+          showMessage(res?.data?.message, "error");
+          return false;
+        }
+        showMessage(res?.data?.message, "success");
+        return true;
+      } catch (error) {
+        console.log(error);
+        return false;
       }
     },
     /// business

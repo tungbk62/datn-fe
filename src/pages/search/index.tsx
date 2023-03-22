@@ -156,11 +156,11 @@ const SearchScreen = (props: Props) => {
                                 additionalClassName={classes.descriptionName}
                             >
                                 Địa chỉ:{" "}
-                                {item?.province +
+                                {item?.wards +
                                 ", " +
                                 item?.district +
                                 ", " +
-                                item?.wards}
+                                item?.province}
                             </BaseTextBoxSlice>
                             <div className={classes.itemsFlex}>
                                 <div className={classes.itemsFlex}>

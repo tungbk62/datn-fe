@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       minWidth: 500,
     },
     container: {
-      maxHeight: 440,
+      maxHeight: 640,
     },
     small: {
       width: theme.spacing(3),

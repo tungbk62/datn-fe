@@ -8,7 +8,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableHead from "@material-ui/core/TableHead";
 import IconButton from "@material-ui/core/IconButton";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { UserDetailModal } from "src/components/UserDetailModal";
 import { ManagementWrapper } from "src/components/ManagementWrapper";
@@ -18,9 +18,10 @@ import { api } from "@src/constants";
 import { Button } from "@material-ui/core";
 import SendNotiForm from "./NotiForm";
 import { Modal } from "antd";
+import axios from "axios";
 
 interface Column {
-  id: "id" | "type" | "message" | "action";
+  id: "id" | "type" | "message" | "action" | "date" | "stt" | "user";
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -29,9 +30,11 @@ interface Column {
 }
 
 const columns: Column[] = [
-  { id: "id", label: "Id", minWidth: 100 },
+  { id: "stt", label: "STT", maxWidth: 50 },
   { id: "type", label: "Loại thông báo", minWidth: 100 },
-  { id: "message", label: "Nội dung", minWidth: 100, maxWidth: 100 },
+  { id: "user", label: "Người nhận", minWidth: 100 },
+  { id: "message", label: "Nội dung", minWidth: 200, maxWidth: 400 },
+  { id: "date", label: "Ngày tạo", maxWidth: 80 },
   { id: "action", label: "Thao tác", minWidth: 100, align: "right" },
 ];
 
@@ -114,52 +117,29 @@ const NotiManagementScreenComponent = (props: Props): JSX.Element => {
     getListUser();
   }, [appReducer, page, rowsPerPage]);
 
-  const handleModalOpen = async (type?: string) => {
-    switch (type) {
-      case "view":
-        {
-          // onPressOpenModal();
-          // const data = await appReducer?.getDetailUser(item?.id);
-          // setDataModal(data);
-        }
-        return;
-      case "review":
-        {
-          // const params = {
-          //   user: item?.id,
-          //   display: item?.displayReview ? 0 : 1,
-          // };
-          // await appReducer?.displayReviewNormalUser(params);
-        }
-        return;
-      case "lock":
-        {
-          // const params = {
-          //   post: item?.id,
-          //   locked: item?.locked ? 1 : 0,
-          // };
-          // await appReducer?.lockNormalPost(params);
-        }
-        return;
-
-      default:
-        break;
+  const handleDelete = async (item : any) =>{
+    const response = await axios.delete<any>(api.deleteNotification, {data: [item.id]});
+    if(response.status != 200){
+      return;
     }
-  };
 
-  const renderActionIcon = () => {
+    const newNotifications = notifications.filter((o) => o.id != item.id);
+    setNotifications(newNotifications);
+  }
+
+  const renderActionIcon = (item : any) => {
     return (
       <div>
         <IconButton
           color="inherit"
           aria-label="open drawer"
           onClick={() => {
-            handleModalOpen("review", item);
+            handleDelete(item);
           }}
           edge="start"
           // className={}
         >
-          <DeleteForeverIcon />
+          <DeleteIcon/>
         </IconButton>
       </div>
     );
@@ -172,7 +152,7 @@ const NotiManagementScreenComponent = (props: Props): JSX.Element => {
   };
 
   return (
-    <ManagementWrapper title={"Quản lý bài viết"}>
+    <ManagementWrapper title={"Quản lý thông báo"}>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -197,10 +177,12 @@ const NotiManagementScreenComponent = (props: Props): JSX.Element => {
               .map((row, index: number) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell component="th">{row.id}</TableCell>
+                    <TableCell component="th">{index  + 1}</TableCell>
                     <TableCell align="left">{row.typeNotification}</TableCell>
+                    <TableCell align="left">{row.user.firstName + " " + row.user.lastName}</TableCell>
                     <TableCell align="left">{row.message}</TableCell>
-                    <TableCell align="right">{renderActionIcon()}</TableCell>
+                    <TableCell align="left">{row.createdDate}</TableCell>
+                    <TableCell align="right">{renderActionIcon(row)}</TableCell>
                   </TableRow>
                 );
               })}

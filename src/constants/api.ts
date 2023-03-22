@@ -80,4 +80,7 @@ export const api = {
   getUserDetail: `${BASE_URL_API}/user`,
   getProvinceList: `${BASE_URL_API}/address/public/province`,
   getDetailProvince: (provinceId: number) => `${BASE_URL_API}/address/public/province/${provinceId}`,
+  changeStatePostForAdmin: (postId: number) => `${BASE_URL_API}/post/admin/${postId}`,
+  deleteReview: `${BASE_URL_API}/review/admin`,
+  deleteNotification: `${BASE_URL_API}/notification/admin`
 };

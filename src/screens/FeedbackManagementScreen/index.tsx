@@ -12,6 +12,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import CheckBoxOutlinedIcon from "@material-ui/icons/CheckBoxOutlined";
 import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutlineBlankOutlined";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { UserDetailModal } from "src/components/UserDetailModal";
 import { ManagementWrapper } from "src/components/ManagementWrapper";
@@ -23,9 +24,11 @@ import { Dispatch, RootState } from "@src/store";
 import { Feedback } from "@src/store/models/auth/interface";
 import { Input } from "@material-ui/core";
 import { debounce } from "lodash";
+import { BaseButton } from "@src/components";
+import axios from "axios";
 
 interface Column {
-  id: "createdBy" | "content" | "rating" | "";
+  id: "createdBy" | "content" | "rating" | "" | "stt" | "date";
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -34,17 +37,19 @@ interface Column {
 }
 
 const columns: Column[] = [
-  { id: "createdBy", label: "Người viết", maxWidth: 80 },
+  {id: "stt", label: "STT", maxWidth: 50},
   {
     id: "content",
-    label: "Nội dung",
+    label: "Nội dung đánh giá",
   },
   {
     id: "rating",
     label: "Điểm đánh giá",
     // minWidth: 0,
-    maxWidth: 30,
+    maxWidth: 50,
   },
+  { id: "createdBy", label: "Người tạo", maxWidth: 100 },
+  { id: "date", label: "Ngày tạo", maxWidth: 100 },
   {
     id: "",
     label: "Thao tác",
@@ -72,6 +77,7 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [userId, setUserId] = useState() as any;
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, feedbacks.length - page * rowsPerPage);
   const handleChangePage = (
@@ -93,11 +99,10 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
       const params = {
         page: page,
         size: rowsPerPage,
-        userId,
       };
       try {
         const feedbacks = await apiHelper.get<Feedback[]>(
-          api.listFeedback(6),
+          api.listFeedback(Number(userId)),
           params,
         );
         console.log(feedbacks);
@@ -112,22 +117,22 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
   );
 
   useEffect(() => {
-    getFeedbacks();
+    if(!userId){
+      return;
+    }
+    getFeedbacks(userId);
   }, [getFeedbacks, page, rowsPerPage]);
 
-  const handleModalOpen = async (type: string, item?: any) => {
-    console.log(item)
-    switch (type) {
-      case "view":
-        return;
-      case "review":
-        return;
-      case "lock":
-        return;
-      default:
-        break;
+  const handleDelete = async (item : any) =>{
+    const response = await axios.delete<any>(api.deleteReview, {data: [item.id]});
+    if(response.status != 200){
+      return;
     }
-  };
+
+    const newFeedBacks = feedbacks.filter((o) => o.id != item.id);
+    console.log("new feedback", newFeedBacks);
+    setFeedbacks(newFeedBacks);
+  }
 
   const renderFunctionIcon = (item: any) => {
     return (
@@ -136,35 +141,11 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
           color="inherit"
           aria-label="open drawer"
           onClick={() => {
-            handleModalOpen("review", item);
+            handleDelete(item);
           }}
           edge="start"
         >
-          {item?.displayReview ? (
-            <CheckBoxOutlinedIcon />
-          ) : (
-            <CheckBoxOutlineBlankOutlinedIcon />
-          )}
-        </IconButton>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => {
-            handleModalOpen("lock", item);
-          }}
-          edge="start"
-        >
-          {item?.locked ? <LockIcon /> : <LockOpenIcon />}
-        </IconButton>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => {
-            handleModalOpen("view", item);
-          }}
-          edge="start"
-        >
-          <VisibilityIcon />
+          <DeleteIcon/>
         </IconButton>
       </div>
     );
@@ -172,20 +153,28 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
 
   const [openModal, setOpenModal] = useState(false) as any;
   const [dataModal, setDataModal] = useState();
+  
   const handleCloseModal = () => {
     setOpenModal(false);
   };
 
   return (
-    <ManagementWrapper title={"Đánh giá"}>
+    <ManagementWrapper title={"Quản lý đánh giá"}>
       <Input
-        placeholder="Nhập query bài viết cần duyệt báo cáo"
+        placeholder="Nhập ID người kinh doanh cần duyệt đánh giá"
         style={{ width: 350 }}
-        onChange={debounce(e => {
-          getFeedbacks(e.target.value);
-        }, 500)}
+        onChange={(e) => {setUserId(e.target.value)}}
       />
-      <TableContainer>
+      <BaseButton
+              className={classes.loginButton}
+              onClick={() => {
+                getFeedbacks(userId)
+              }
+              }
+            >
+              Tìm kiếm
+            </BaseButton>
+      <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -206,14 +195,18 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
           <TableBody>
             {feedbacks
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map(row => {
+              .map((row: any, index : number) => {
                 return (
                   <TableRow key={row.id}>
                     <TableCell component="th">
-                      {row.createdBy.firstName}
+                      {index + 1}
                     </TableCell>
                     <TableCell align="left">{row.description}</TableCell>
-                    <TableCell align="left">{row.ratingPoint}</TableCell>
+                    <TableCell align="left">{`${row.ratingPoint}/5`}</TableCell>
+                    <TableCell component="th">
+                      {row.createdBy.firstName + " " + row.createdBy.lastName}
+                    </TableCell>
+                    <TableCell align="left">{row.createdDate}</TableCell>
                     <TableCell align="right">
                       {renderFunctionIcon(row)}
                     </TableCell>

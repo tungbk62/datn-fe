@@ -13,13 +13,15 @@ import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import CheckBoxOutlinedIcon from "@material-ui/icons/CheckBoxOutlined";
 import CheckBoxOutlineBlankOutlinedIcon from "@material-ui/icons/CheckBoxOutlineBlankOutlined";
+import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 
 import { UserDetailModal } from "src/components/UserDetailModal";
 import { ManagementWrapper } from "src/components/ManagementWrapper";
 import { useStyles } from "./PostManagementScreen.styles";
+import { Router, useRouter } from "next/router";
 
 interface Column {
-  id: "id" | "createdBy" | "title" | "type" | "mainImageUrl" | "" | "address";
+  id: "id" | "createdBy" | "title" | "type" | "mainImageUrl" | "" | "address" |"stt";
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -28,9 +30,10 @@ interface Column {
 }
 
 const columns: Column[] = [
+  { id: "stt", label: "STT", minWidth: 50, maxWidth: 50 },
+  { id: "id", label: "ID", minWidth: 100 },
   { id: "mainImageUrl", label: "Ảnh mô tả", minWidth: 100 },
-  { id: "id", label: "Id", minWidth: 100 },
-  { id: "createdBy", label: "Người viết", minWidth: 100 },
+  { id: "createdBy", label: "Người tạo", minWidth: 100 },
   {
     id: "title",
     label: "Tiêu đề",
@@ -39,7 +42,7 @@ const columns: Column[] = [
   },
   {
     id: "address",
-    label: "địa chỉ",
+    label: "Địa chỉ",
     minWidth: 100,
     maxWidth: 100,
   },
@@ -64,6 +67,7 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [rows, setRows] = useState([]) as any;
   const { appReducer } = props;
+  const router = useRouter();
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   const handleChangePage = (
@@ -81,11 +85,11 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
   };
 
   useEffect(() => {
-    getListUser();
+    getListPostAdmin();
     // setRows(appState?.listUserBusiness)
   }, [page]);
 
-  const getListUser = async () => {
+  const getListPostAdmin = async () => {
     const params = {
       page: page,
       size: rowsPerPage,
@@ -96,31 +100,72 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
     }
   };
 
-  const handleModalOpen = async (type?: string) => {
+  const handleChangeData = (type: string, item: any, state: any) => {
+    console.log("handleChangeData");
+    const index = rows.findIndex((o : any) => o.id === item.id);
+    console.log(index);
+
+    if(index === "undefined"){
+      return;
+    }
+    console.log(index);
+
     switch (type) {
-      case "view":
+      case "verified":
         {
-          // onPressOpenModal();
-          // const data = await appReducer?.getDetailUser(item?.id);
-          // setDataModal(data);
+          rows[index].verified = state;
+          console.log("handleChangeData1");
+        }
+        break;
+      case "locked":
+        {
+          rows[index].locked = state;
+          console.log("handleChangeData2");
+        }
+        break;
+      case "hide":
+        {
+          rows[index].hide = state;
+          console.log("handleChangeData3");
+        }
+        break;
+      default:
+        break;
+    }
+
+    console.log("handleChangeDataEnd");
+    let newRows = [...rows];
+    setRows(newRows);
+  }
+
+  const handleModalOpen = async (type: string, item: any) => {
+    switch (type) {
+      case "verified":
+        {
+          const state = !item.verified;
+          const data = await appReducer?.verifiedPostForAdmin({postId: item?.id, status: state});
+          if(data){
+            handleChangeData(type, item, state);
+          }
+          
         }
         return;
-      case "review":
+      case "locked":
         {
-          // const params = {
-          //   user: item?.id,
-          //   display: item?.displayReview ? 0 : 1,
-          // };
-          // await appReducer?.displayReviewNormalUser(params);
+          const state = !item.locked;
+          const data = await appReducer?.lockPostForAdmin({postId: item?.id, status: state});
+          if(data){
+            handleChangeData(type, item, state);
+          }
         }
         return;
-      case "lock":
+      case "hide":
         {
-          // const params = {
-          //   post: item?.id,
-          //   locked: item?.locked ? 1 : 0,
-          // };
-          // await appReducer?.lockNormalPost(params);
+          const state = !item.hide;
+          const data = await appReducer?.hidePostForAdmin({postId: item?.id, status: state});
+          if(data){
+            handleChangeData(type, item, state);
+          }
         }
         return;
 
@@ -136,12 +181,13 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
           color="inherit"
           aria-label="open drawer"
           onClick={() => {
-            handleModalOpen("review", item);
+            handleModalOpen("verified", item);
           }}
           edge="start"
+          title="Xác thực bài đăng"
           // className={}
         >
-          {item?.displayReview ? (
+          {item?.verified ? (
             <CheckBoxOutlinedIcon />
           ) : (
             <CheckBoxOutlineBlankOutlinedIcon />
@@ -151,9 +197,10 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
           color="inherit"
           aria-label="open drawer"
           onClick={() => {
-            handleModalOpen("lock", item);
+            handleModalOpen("locked", item);
           }}
           edge="start"
+          title={item?.locked ? "Mở bài đăng" : "Khoá bài đăng"}
           // className={}
         >
           {item?.locked ? <LockIcon /> : <LockOpenIcon />}
@@ -162,12 +209,12 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
           color="inherit"
           aria-label="open drawer"
           onClick={() => {
-            handleModalOpen("view", item);
+            handleModalOpen("hide", item);
           }}
           edge="start"
-          // className={}
+          title={item?.hide ? "Hiện bài đăng" : "Ẩn bài đăng"}
         >
-          <VisibilityIcon />
+          {item?.hide ? <VisibilityOffOutlinedIcon/> : <VisibilityIcon />}
         </IconButton>
       </div>
     );
@@ -206,11 +253,14 @@ const PostManagementScreenComponent = (props: Props): JSX.Element => {
                 return (
                   <TableRow key={index}>
                     <TableCell component="th" scope="row">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell component="th" onClick={() => {router.push("/post/" + row.id)}}>{row.id}</TableCell >
+                    <TableCell component="th" scope="row" onClick={() => {router.push("/post/" + row.id)}}>
                       <div className={classes.logoCpn}>
                         <img src={row.mainImageUrl} alt="" />
                       </div>
                     </TableCell>
-                    <TableCell component="th">{row.id}</TableCell>
                     <TableCell align="left">{row.createdBy}</TableCell>
                     <TableCell align="left">{row.title}</TableCell>
                     <TableCell align="left">

@@ -3,8 +3,8 @@ export const userDto = (dataRes: any) => {
     id: dataRes.id,
     name: dataRes.lastName +" " + dataRes.firstName,
     email: dataRes.email,
-    type: dataRes.imageUrl,
-    imageUrl: dataRes.type,
+    type: dataRes.type,
+    imageUrl: dataRes.imageUrl,
     locked: dataRes.locked,
     displayReview: dataRes.displayReview,
   };
