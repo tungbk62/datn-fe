@@ -45,18 +45,19 @@ export interface NotiDetail {
   typeNotification: string;
   viewed?: boolean;
   createdDate?: string;
-  description: string;
+  message: string;
 }
 
-const NotificationItem = (noti: NotiDetail) => {
+const NotificationItem = (props: any) => {
   const classes = useStyles();
+  const {noti, index} = props;
 
   return (
     <div className={classes.notiDetail}>
-      <p>{noti.id}</p>
+      <p>{index + 1}</p>
       <Gap.XS />
       <p style={{ width: 130 }}>{noti.typeNotification}</p>
-      <p>{noti.description}</p>
+      <p>{noti.message}</p>
     </div>
   );
 };
@@ -109,10 +110,10 @@ const Notifications: React.FC<Props> = () => {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        {viewedNotis.map(item => (<NotificationItem key={item.id} {...item} />))}
+        {viewedNotis.map((item: any, index: number) => (<NotificationItem key={item.id} noti={item} index={index} />))}
       </TabPanel>
       <TabPanel value={value} index={1}>
-        {notViewedNotis.map(item => (<NotificationItem key={item.id} {...item} />))}
+        {notViewedNotis.map((item: any, index: number) => (<NotificationItem key={item.id} noti={item} index={index}/>))}
       </TabPanel>
     </div>
   );

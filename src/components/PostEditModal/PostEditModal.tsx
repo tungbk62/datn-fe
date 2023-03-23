@@ -26,6 +26,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import Gap from "../Gap";
 import ImagePicker from "../ImagePicker/ImagePicker";
+import { apiHelper } from "@src/helpers";
+import { api } from "@src/constants";
+import axios from "axios";
 
 interface Props {
   visible?: boolean;
@@ -137,6 +140,10 @@ const Component = (props: Props): JSX.Element => {
   }, [province]);
 
   useEffect(() => {
+    console.log("images", images);
+  }, [images]);
+
+  useEffect(() => {
     if(data){
 
       setDescription(data?.description);
@@ -153,6 +160,7 @@ const Component = (props: Props): JSX.Element => {
       console.log(tmp2);
       setDataAddress(tmp2);
     }
+    setImages([]);
   }, [props.visible]);
 
   const getDataDistinct = async () => {
@@ -182,7 +190,24 @@ const Component = (props: Props): JSX.Element => {
       }
     }else{
       const res = await appReducer?.createPost(values);
-      if (res) {
+      if (res && images.length > 0) {
+        const formData = new FormData();
+
+        const uploadLoadImage = async () =>{
+          console.log("upload image");
+          const resImage = await axios.post(api.uploadPostImage(res.id), formData, {headers: { "Content-Type": "multipart/form-data" }});
+          if(resImage.status = 200){
+            setDescription("");
+            hideModal();
+          }
+        }
+
+        images.forEach(o => formData.append("files", o.file as File, o.file?.name));
+
+        console.log("formData", formData);
+
+        uploadLoadImage();
+      }else if(res){
         setDescription("");
         hideModal();
       }
@@ -258,8 +283,9 @@ const Component = (props: Props): JSX.Element => {
                         theme="snow"
                         defaultValue={description}
                         onChange={value => {
+                          console.log("value", value);
                           setDescription(value);
-                          setFieldValue(value)
+                          setFieldValue("description", value);
                         }}
                         modules={modules}
                       />
@@ -521,7 +547,8 @@ const Component = (props: Props): JSX.Element => {
                       <ImageUploading
                         multiple
                         value={images}
-                        onChange={imageList => setImages(imageList)}
+                        onChange={imageList => {
+                          setImages(imageList);}}
                         maxNumber={5}
                         dataURLKey="data_url"
                       >
@@ -577,7 +604,9 @@ const Component = (props: Props): JSX.Element => {
                         <Grid className={""} item xs={3}>
                           <BaseButton
                             className={classes.button}
-                            onClick={() => onPost(values)}
+                            onClick={() => {
+                              console.log("images", values);
+                              onPost(values);}}
                           >
                             {buttonText}
                           </BaseButton>

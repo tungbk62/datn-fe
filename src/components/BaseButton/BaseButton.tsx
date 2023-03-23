@@ -26,4 +26,5 @@ const Component = forwardRef((props: any, ref: any): JSX.Element => {
   );
 });
 const BaseButton = React.memo(Component);
+BaseButton.displayName = 'BaseButton'
 export { BaseButton };

@@ -1,6 +1,6 @@
 // const BASE_URL_API = process.env.NEXT_PUBLIC_CURRENT_WEBSITE; // housing-anywhere
-// const BASE_URL_API = "http://13.229.115.96:8080";
-const BASE_URL_API = "http://localhost:8080";
+const BASE_URL_API = "http://13.229.115.96:8080";
+// const BASE_URL_API = "http://localhost:8080";
 const API_VERSION = "";
 const AUTH = "/auth";
 const USER = "/user";
@@ -82,5 +82,6 @@ export const api = {
   getDetailProvince: (provinceId: number) => `${BASE_URL_API}/address/public/province/${provinceId}`,
   changeStatePostForAdmin: (postId: number) => `${BASE_URL_API}/post/admin/${postId}`,
   deleteReview: `${BASE_URL_API}/review/admin`,
-  deleteNotification: `${BASE_URL_API}/notification/admin`
+  deleteNotification: `${BASE_URL_API}/notification/admin`,
+  uploadPostImage: (postId : number) => `${BASE_URL_API}/image/business/post/${postId}?main=1`
 };
