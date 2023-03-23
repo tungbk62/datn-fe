@@ -2,13 +2,12 @@ import React, {useEffect, useState } from "react";
 import { useStyles } from './style';
 import PriceSlider from "./PriceSlider";
 import { Select as SelectAntd } from "antd";
-import { Grid, Input, Modal, Slider, Tab, Tabs } from "@material-ui/core";
+import { Button, Grid, Input, Modal, Slider, Tab, Tabs } from "@material-ui/core";
 import { District, TypeEstate, Ward } from "@src/store/models/app/interface";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Gap from "../Gap";
 import { apiHelper } from "@src/helpers";
 import { api } from "@src/constants";
-import { BaseButton } from "../BaseButton";
 import { Router, useRouter } from "next/router";
 
 type MyProps = {
@@ -192,14 +191,14 @@ const FilterMenu: React.FC<MyProps> = (props) => {
             <Gap.XS />
 
           </div>
-          <BaseButton
+          <Button
               className={classes.loginButton}
               onClick={() => {
                 handleClickFind();
                 console.log(searchValue);}}
             >
               Tìm kiếm
-            </BaseButton>
+            </Button>
         </div>
       );
   };

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { Props } from "html-react-parser/lib/attributes-to-props";
 import { Grid } from "@material-ui/core";
 import { Pagination, Skeleton } from "@mui/material";
-import { useStyles } from "./styles";
+import { useStyles } from "../../helpers/styles";
 import moment from "moment";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import { Select as SelectAntd } from "antd";

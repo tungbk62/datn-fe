@@ -22,9 +22,8 @@ import { api } from "@src/constants";
 import { connect } from "react-redux";
 import { Dispatch, RootState } from "@src/store";
 import { Feedback } from "@src/store/models/auth/interface";
-import { Input } from "@material-ui/core";
+import { Button, Input } from "@material-ui/core";
 import { debounce } from "lodash";
-import { BaseButton } from "@src/components";
 import axios from "axios";
 
 interface Column {
@@ -165,7 +164,7 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
         style={{ width: 350 }}
         onChange={(e) => {setUserId(e.target.value)}}
       />
-      <BaseButton
+      <Button
               className={classes.loginButton}
               onClick={() => {
                 getFeedbacks(userId)
@@ -173,7 +172,7 @@ const FeedbackManagementScreenComponent = (_: Props): JSX.Element => {
               }
             >
               Tìm kiếm
-            </BaseButton>
+            </Button>
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>

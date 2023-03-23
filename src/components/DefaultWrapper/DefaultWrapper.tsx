@@ -14,14 +14,13 @@ import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import { Grid, Input, Modal, Slider, Tab, Tabs } from "@material-ui/core";
+import { Button, Grid, Input, Modal, Slider, Tab, Tabs } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
 import Router from 'next/router'
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 import { useStyles } from "./DefaultWrapper.styles";
-import { BaseButton } from "../BaseButton";
 import { PostEditModal } from "../PostEditModal";
 import { Footer } from "./Footer";
 import Gap from "../Gap";
@@ -381,7 +380,7 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
                   style={{marginRight: 16}}
                   onClick={() => {setIsFilter(true)}}
                 ><FilterAltIcon/></IconButton>
-            <BaseButton
+            <Button
               className={classes.loginButton}
               onClick={() => {
                 console.log("helooooo");
@@ -389,17 +388,17 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
                 router.push("/search?queryValue=" + queryValue);}}
             >
               Tìm kiếm
-            </BaseButton>
+            </Button>
             <Gap.XS />
             {authState?.isSignedIn ? (
               <div className={classes.sectionDesktop}>
                 {authState?.userInfo?.type === "BUSINESS" && (
-                  <BaseButton
+                  <Button
                     className={classes.loginButton}
                     onClick={onPressOpenModal}
                   >
                     Đăng tin
-                  </BaseButton>
+                  </Button>
                 )}
                 <IconButton
                   color="inherit"
@@ -427,18 +426,18 @@ const AppWrapperComponent = (props: Props): JSX.Element => {
               </div>
             ) : (
               <div className={classes.sectionDesktop}>
-                <BaseButton
+                <Button
                   className={classes.loginButton}
                   onClick={onPressLogin}
                 >
                   Đăng nhập
-                </BaseButton>
-                <BaseButton
+                </Button>
+                <Button
                   className={classes.registerButton}
                   onClick={onPressRegister}
                 >
                   Đăng ký
-                </BaseButton>
+                </Button>
               </div>
             )}
             <div className={classes.sectionMobile}>

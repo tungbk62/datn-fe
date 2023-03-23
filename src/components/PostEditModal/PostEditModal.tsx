@@ -6,7 +6,6 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import { Button, Grid } from "@material-ui/core";
-import { BaseButton } from "../BaseButton";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { connect } from "react-redux";
@@ -602,14 +601,14 @@ const Component = (props: Props): JSX.Element => {
                         <Grid className={""} item xs={3}></Grid>
                         <Grid className={""} item xs={3}></Grid>
                         <Grid className={""} item xs={3}>
-                          <BaseButton
+                          <Button
                             className={classes.button}
                             onClick={() => {
                               console.log("images", values);
                               onPost(values);}}
                           >
                             {buttonText}
-                          </BaseButton>
+                          </Button>
                         </Grid>
                       </Grid>
                     </div>
